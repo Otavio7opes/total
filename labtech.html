@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Laboratórios - ETEC Júlio de Mesquita</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;600;700&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/labtech.css">
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <div class="logos">
+          <div class="logo-etec">
+            <img src="images/logo-etec.png" alt="ETEC Júlio de Mesquita" class="logo-img">
+          </div>
+          <div class="logo-cps">
+            <img src="images/logo-cps.png" alt="Centro Paula Souza" class="logo-img">
+          </div>
+        </div>
+        <div class="user-menu">
+          <span class="user-name">Técnico de Laboratório</span>
+          <button class="btn-logout" id="btnLogout">
+            <i data-lucide="log-out"></i>
+            Sair
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="header-bar"></div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <!-- Page Title -->
+      <div class="page-header">
+        <h1 class="page-title">Laboratórios Reservados</h1>
+        <p class="page-subtitle">Tela técnico de laboratório - Computador</p>
+      </div>
+
+      <!-- Reservations List -->
+      <div class="reservations-list" id="reservationsList">
+        <!-- As reservas serão carregadas dinamicamente via JavaScript -->
+      </div>
+
+      <!-- Adjust Stock Button -->
+      <div class="actions-footer">
+        <button class="btn-primary btn-large" id="btnAdjustStock">
+          Ajustar Estoque
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal: Relatar Problema -->
+  <div class="modal" id="modalProblema">
+    <div class="modal-overlay" id="modalProblemaOverlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Relatar Perda/Quebra</h2>
+        <button class="modal-close" id="btnCloseModalProblema">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="formProblema">
+          <div class="form-group">
+            <label for="problemaReserva">Reserva</label>
+            <input type="text" id="problemaReserva" class="form-control" readonly>
+          </div>
+          
+          <div class="form-group">
+            <label for="problemaMaterial">Material Afetado</label>
+            <select id="problemaMaterial" class="form-control" required>
+              <option value="">Selecione o material</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="problemaTipo">Tipo de Problema</label>
+            <select id="problemaTipo" class="form-control" required>
+              <option value="">Selecione</option>
+              <option value="quebra">Quebra</option>
+              <option value="perda">Perda/Extravio</option>
+              <option value="falta">Falta no Estoque</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="problemaQuantidade">Quantidade</label>
+            <input type="number" id="problemaQuantidade" class="form-control" min="1" required>
+          </div>
+
+          <div class="form-group">
+            <label for="problemaObservacao">Observações</label>
+            <textarea id="problemaObservacao" class="form-control" rows="4" placeholder="Descreva o que aconteceu..."></textarea>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-secondary" id="btnCancelProblema">Cancelar</button>
+            <button type="submit" class="btn-primary">Registrar Problema</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Ajustar Estoque -->
+  <div class="modal" id="modalEstoque">
+    <div class="modal-overlay" id="modalEstoqueOverlay"></div>
+    <div class="modal-content modal-large">
+      <div class="modal-header">
+        <h2 class="modal-title">Ajustar Estoque</h2>
+        <button class="modal-close" id="btnCloseModalEstoque">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="search-box">
+          <i data-lucide="search"></i>
+          <input type="text" id="searchEstoque" class="form-control" placeholder="Buscar material...">
+        </div>
+
+        <div class="estoque-list" id="estoqueList">
+          <!-- Lista de materiais será carregada via JavaScript -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Editar Quantidade -->
+  <div class="modal" id="modalEditarQuantidade">
+    <div class="modal-overlay" id="modalEditarQuantidadeOverlay"></div>
+    <div class="modal-content modal-small">
+      <div class="modal-header">
+        <h2 class="modal-title">Editar Quantidade</h2>
+        <button class="modal-close" id="btnCloseModalEditarQuantidade">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="formEditarQuantidade">
+          <div class="form-group">
+            <label id="labelMaterialNome"></label>
+            <div class="quantidade-control">
+              <button type="button" class="btn-quantidade" id="btnDiminuir">-</button>
+              <input type="number" id="inputNovaQuantidade" class="form-control text-center" min="0" required>
+              <button type="button" class="btn-quantidade" id="btnAumentar">+</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="motivoAjuste">Motivo do Ajuste</label>
+            <select id="motivoAjuste" class="form-control" required>
+              <option value="">Selecione</option>
+              <option value="compra">Compra/Reposição</option>
+              <option value="quebra">Quebra</option>
+              <option value="perda">Perda/Extravio</option>
+              <option value="correcao">Correção de Inventário</option>
+            </select>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-secondary" id="btnCancelEditarQuantidade">Cancelar</button>
+            <button type="submit" class="btn-primary">Salvar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">
+    <div class="toast-content">
+      <i data-lucide="check-circle" class="toast-icon"></i>
+      <span class="toast-message" id="toastMessage"></span>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/labtech.js"></script>
+</body>
+
+</html>

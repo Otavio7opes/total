@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reservar Laboratório - ETEC Júlio de Mesquita</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;600;700&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/reservar.css">
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <div class="logos">
+          <div class="logo-etec">
+            <img src="images/logo-etec.png" alt="ETEC Júlio de Mesquita" class="logo-img">
+          </div>
+          <div class="logo-cps">
+            <img src="images/logo-cps.png" alt="Centro Paula Souza" class="logo-img">
+          </div>
+        </div>
+        <div class="user-menu">
+          <button class="btn-back" onclick="window.location.href='index.html'">
+            <i data-lucide="arrow-left"></i>
+            Voltar
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="header-bar"></div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <!-- Page Title -->
+      <div class="page-header">
+        <h1 class="page-title">Reservar Laboratório</h1>
+        <p class="page-subtitle">Preencha os dados para fazer sua reserva</p>
+      </div>
+
+      <!-- Formulário de Reserva -->
+      <div class="form-container">
+        <form id="formReserva" class="reservation-form">
+          
+          <!-- Seleção de Laboratório -->
+          <div class="form-section">
+            <h3 class="section-title">
+              <i data-lucide="flask-conical"></i>
+              Laboratório
+            </h3>
+            <div class="form-group">
+              <label for="laboratorio">Selecione o Laboratório</label>
+              <select id="laboratorio" class="form-control" required>
+                <option value="">Escolha um laboratório</option>
+                <option value="1">Laboratório 1</option>
+                <option value="2">Laboratório 2</option>
+                <option value="3">Laboratório 3</option>
+                <option value="4">Laboratório 4</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Data e Horário -->
+          <div class="form-section">
+            <h3 class="section-title">
+              <i data-lucide="calendar-clock"></i>
+              Data e Horário
+            </h3>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="data">Data</label>
+                <input type="date" id="data" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label for="horarioInicio">Horário Início</label>
+                <input type="time" id="horarioInicio" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label for="horarioFim">Horário Fim</label>
+                <input type="time" id="horarioFim" class="form-control" required>
+              </div>
+            </div>
+          </div>
+
+          <!-- Kit de Materiais -->
+          <div class="form-section">
+            <h3 class="section-title">
+              <i data-lucide="package"></i>
+              Kit de Materiais
+            </h3>
+            <div class="form-group">
+              <label for="kit">Selecione um Kit</label>
+              <div class="kit-selection">
+                <select id="kit" class="form-control" required>
+                  <option value="">Escolha um kit</option>
+                  <option value="novo">+ Criar Novo Kit</option>
+                  <!-- Kits serão carregados via JavaScript -->
+                </select>
+                <button type="button" class="btn-secondary" onclick="window.location.href='kits.html'">
+                  <i data-lucide="settings"></i>
+                  Gerenciar Kits
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Observações -->
+          <div class="form-section">
+            <h3 class="section-title">
+              <i data-lucide="file-text"></i>
+              Observações
+            </h3>
+            <div class="form-group">
+              <label for="observacoes">Informações Adicionais (Opcional)</label>
+              <textarea id="observacoes" class="form-control" rows="4" placeholder="Descreva detalhes sobre a aula prática, equipamentos especiais necessários, etc."></textarea>
+            </div>
+          </div>
+
+          <!-- Botões -->
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" onclick="window.location.href='index.html'">
+              Cancelar
+            </button>
+            <button type="submit" class="btn-primary">
+              <i data-lucide="check"></i>
+              Confirmar Reserva
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <div class="footer-bar"></div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">
+    <div class="toast-content">
+      <i data-lucide="check-circle" class="toast-icon"></i>
+      <span class="toast-message" id="toastMessage"></span>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/reservar.js"></script>
+</body>
+
+</html>

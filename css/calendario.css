@@ -1,0 +1,618 @@
+/* ====================================
+   IMPORTS E RESET
+   ==================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --color-primary: #B20000;
+  --color-primary-dark: #8B0000;
+  --color-secondary: #005C6D;
+  --color-secondary-dark: #004854;
+  --color-secondary-light: #29C1CF;
+  --color-gray-50: #F9FAFB;
+  --color-gray-100: #F3F4F6;
+  --color-gray-200: #E5E7EB;
+  --color-gray-600: #666666;
+  --color-gray-800: #333333;
+  --color-gray-900: #1F2937;
+  --font-primary: 'Roboto Slab', serif;
+  --font-secondary: 'Open Sans', sans-serif;
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2rem;
+  --spacing-xl: 3rem;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  --transition-base: 300ms ease;
+}
+
+body {
+  font-family: var(--font-secondary);
+  color: var(--color-gray-800);
+  background-color: var(--color-gray-50);
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+}
+
+/* ====================================
+   HEADER
+   ==================================== */
+.header {
+  background-color: white;
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md) 0;
+}
+
+.logos {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+
+.logo-img {
+  height: 60px;
+  width: auto;
+}
+
+.btn-back {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-md);
+  background-color: transparent;
+  color: var(--color-gray-600);
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.btn-back:hover {
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-800);
+}
+
+.header-bar {
+  height: 4px;
+  background: var(--color-primary);
+}
+
+/* ====================================
+   MAIN CONTENT
+   ==================================== */
+.main-content {
+  flex: 1;
+  padding: var(--spacing-xl) 0;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+}
+
+.page-title {
+  font-family: var(--font-primary);
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #000000;
+  margin-bottom: var(--spacing-xs);
+}
+
+.page-subtitle {
+  font-size: 1rem;
+  color: var(--color-gray-600);
+}
+
+/* ====================================
+   CALENDAR
+   ==================================== */
+.calendar-container {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: var(--spacing-lg);
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.calendar {
+  background: white;
+  border-radius: 16px;
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-md);
+  border: 2px solid var(--color-gray-200);
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.btn-nav {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-800);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.btn-nav:hover {
+  background-color: var(--color-primary);
+  color: white;
+  transform: scale(1.1);
+}
+
+.month-year {
+  font-family: var(--font-primary);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-gray-900);
+  text-transform: capitalize;
+}
+
+.days-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-sm);
+}
+
+.day-name {
+  text-align: center;
+  font-weight: 600;
+  color: var(--color-gray-600);
+  font-size: 0.875rem;
+  padding: var(--spacing-xs);
+}
+
+.dates-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--spacing-xs);
+}
+
+.date-cell {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  position: relative;
+}
+
+.date-cell:not(.inactive):hover {
+  background-color: var(--color-gray-100);
+  transform: scale(1.1);
+}
+
+.date-cell.inactive {
+  color: var(--color-gray-200);
+  cursor: default;
+}
+
+.date-cell.today {
+  background-color: var(--color-secondary-light);
+  color: white;
+  font-weight: 700;
+}
+
+.date-cell.reserved {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.date-cell.selected {
+  background-color: var(--color-secondary);
+  color: white;
+  transform: scale(1.15);
+}
+
+/* ====================================
+   LEGEND
+   ==================================== */
+.calendar-legend {
+  background: white;
+  border-radius: 16px;
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-md);
+  border: 2px solid var(--color-gray-200);
+  height: fit-content;
+}
+
+.legend-title {
+  font-family: var(--font-primary);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-gray-900);
+  margin-bottom: var(--spacing-md);
+}
+
+.legend-items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: 0.95rem;
+  color: var(--color-gray-800);
+}
+
+.legend-color {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--color-gray-200);
+}
+
+.legend-color.today {
+  background-color: var(--color-secondary-light);
+}
+
+.legend-color.reserved {
+  background-color: var(--color-primary);
+}
+
+.legend-color.available {
+  background-color: white;
+}
+
+/* ====================================
+   DAY PANEL
+   ==================================== */
+.day-panel {
+  max-width: 1000px;
+  margin: var(--spacing-xl) auto 0;
+  background: white;
+  border-radius: 16px;
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-lg);
+  border: 2px solid var(--color-primary);
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 2px solid var(--color-gray-200);
+}
+
+.panel-title {
+  font-family: var(--font-primary);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-gray-900);
+}
+
+.btn-close-panel {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.btn-close-panel:hover {
+  background-color: var(--color-danger);
+  color: white;
+}
+
+.existing-reservations {
+  margin-bottom: var(--spacing-lg);
+}
+
+.reservation-item {
+  background: var(--color-gray-50);
+  border-radius: 12px;
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  border: 2px solid var(--color-gray-200);
+}
+
+.reservation-item:last-child {
+  margin-bottom: 0;
+}
+
+.reservation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: var(--spacing-sm);
+}
+
+.reservation-title {
+  font-weight: 700;
+  color: var(--color-gray-900);
+  font-size: 1.1rem;
+}
+
+.reservation-time {
+  color: var(--color-gray-600);
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.reservation-lab {
+  color: var(--color-secondary);
+  font-weight: 600;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.reservation-kit {
+  color: var(--color-gray-600);
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-xs);
+}
+
+.new-reservation-action {
+  text-align: center;
+  padding: var(--spacing-lg) 0;
+}
+
+.btn-large {
+  padding: var(--spacing-md) var(--spacing-xl);
+  font-size: 1.05rem;
+}
+
+/* Formulário de Reserva */
+.reservation-form-container {
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-lg);
+  border-top: 2px solid var(--color-gray-200);
+}
+
+.form-title {
+  font-family: var(--font-primary);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-gray-900);
+  margin-bottom: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.form-title svg {
+  color: var(--color-secondary);
+  width: 24px;
+  height: 24px;
+}
+
+.reservation-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: var(--color-gray-700);
+  margin-bottom: var(--spacing-xs);
+  font-size: 0.95rem;
+}
+
+.form-control {
+  width: 100%;
+  padding: var(--spacing-sm);
+  border: 1px solid var(--color-gray-300);
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-family: var(--font-secondary);
+  transition: all var(--transition-base);
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(178, 0, 0, 0.1);
+}
+
+textarea.form-control {
+  resize: vertical;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+}
+
+.kit-selection {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--spacing-sm);
+}
+
+.btn-sm {
+  padding: var(--spacing-sm);
+}
+
+.form-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: flex-end;
+  margin-top: var(--spacing-md);
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: var(--spacing-lg);
+  right: var(--spacing-lg);
+  background-color: var(--color-success);
+  color: white;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: 8px;
+  box-shadow: var(--shadow-lg);
+  display: none;
+  z-index: 2000;
+  animation: toastSlideIn var(--transition-base);
+}
+
+.toast.show {
+  display: block;
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.toast-content {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.toast-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.toast-message {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.btn-secondary {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background-color: #E8E8E8;
+  color: var(--color-gray-800);
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  font-family: var(--font-secondary);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  justify-content: center;
+}
+
+.btn-secondary:hover {
+  background-color: #D0D0D0;
+}
+
+/* ====================================
+   FOOTER
+   ==================================== */
+.footer-bar {
+  height: 4px;
+  background: var(--color-secondary-dark);
+  margin-top: auto;
+}
+
+/* ====================================
+   RESPONSIVE
+   ==================================== */
+@media (max-width: 968px) {
+  .calendar-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .calendar-legend {
+    margin: 0 auto;
+    max-width: 600px;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-title {
+    font-size: 2rem;
+  }
+  
+  .logos {
+    gap: var(--spacing-md);
+  }
+  
+  .logo-img {
+    height: 45px;
+  }
+  
+  .month-year {
+    font-size: 1.25rem;
+  }
+  
+  .date-cell {
+    font-size: 0.875rem;
+  }
+}

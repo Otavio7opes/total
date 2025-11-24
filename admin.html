@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Administrativo - ETEC Júlio de Mesquita</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;600;700&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <div class="logos">
+          <div class="logo-etec">
+            <img src="images/logo-etec.png" alt="ETEC Júlio de Mesquita" class="logo-img">
+          </div>
+          <div class="logo-cps">
+            <img src="images/logo-cps.png" alt="Centro Paula Souza" class="logo-img">
+          </div>
+        </div>
+        <div class="user-menu">
+          <span class="user-name">Administrador</span>
+          <button class="btn-logout" id="btnLogout">
+            <i data-lucide="log-out"></i>
+            Sair
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="header-bar"></div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <!-- Page Title -->
+      <div class="page-header">
+        <h1 class="page-title">Painel Administrativo</h1>
+        <p class="page-subtitle">Gerenciamento de usuários e materiais</p>
+      </div>
+
+      <!-- Tabs Navigation -->
+      <div class="tabs-navigation">
+        <button class="tab-button active" data-tab="usuarios" id="tabUsuarios">
+          <i data-lucide="users"></i>
+          Usuários
+        </button>
+        <button class="tab-button" data-tab="materiais" id="tabMateriais">
+          <i data-lucide="package"></i>
+          Materiais
+        </button>
+      </div>
+
+      <!-- Tab: Usuários -->
+      <div class="tab-content active" id="contentUsuarios">
+        <div class="section-header">
+          <h2 class="section-title">Gerenciar Usuários</h2>
+          <button class="btn-primary" id="btnNovoUsuario">
+            <i data-lucide="plus"></i>
+            Novo Usuário
+          </button>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>Tipo</th>
+                <th class="text-right">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="usuariosTableBody">
+              <!-- Linhas serão carregadas via JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tab: Materiais -->
+      <div class="tab-content" id="contentMateriais">
+        <div class="section-header">
+          <h2 class="section-title">Controle de Estoque</h2>
+          <button class="btn-primary" id="btnNovoMaterial">
+            <i data-lucide="plus"></i>
+            Novo Material
+          </button>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Material</th>
+                <th class="text-center">Quantidade</th>
+                <th class="text-center">Unidade</th>
+                <th class="text-center">Mínimo</th>
+                <th class="text-center">Status</th>
+                <th class="text-right">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="materiaisTableBody">
+              <!-- Linhas serão carregadas via JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal: Usuário -->
+  <div class="modal" id="modalUsuario">
+    <div class="modal-overlay" id="modalUsuarioOverlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalUsuarioTitle">Novo Usuário</h2>
+        <button class="modal-close" id="btnCloseModalUsuario">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="formUsuario">
+          <div class="form-group">
+            <label for="usuarioNome">Nome Completo</label>
+            <input type="text" id="usuarioNome" class="form-control" required placeholder="Ex: Prof. João Silva">
+          </div>
+
+          <div class="form-group">
+            <label for="usuarioEmail">E-mail</label>
+            <input type="email" id="usuarioEmail" class="form-control" required placeholder="Ex: joao.silva@etec.sp.gov.br">
+          </div>
+
+          <div class="form-group">
+            <label for="usuarioTipo">Tipo de Usuário</label>
+            <select id="usuarioTipo" class="form-control" required>
+              <option value="">Selecione</option>
+              <option value="Professor">Professor</option>
+              <option value="Técnico">Técnico de Laboratório</option>
+              <option value="Administrador">Administrador</option>
+            </select>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-secondary" id="btnCancelUsuario">Cancelar</button>
+            <button type="submit" class="btn-primary">Salvar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Material -->
+  <div class="modal" id="modalMaterial">
+    <div class="modal-overlay" id="modalMaterialOverlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalMaterialTitle">Novo Material</h2>
+        <button class="modal-close" id="btnCloseModalMaterial">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="formMaterial">
+          <div class="form-group">
+            <label for="materialNome">Nome do Material</label>
+            <input type="text" id="materialNome" class="form-control" required placeholder="Ex: Béquer 50ml">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="materialQuantidade">Quantidade</label>
+              <input type="number" id="materialQuantidade" class="form-control" min="0" required placeholder="0">
+            </div>
+
+            <div class="form-group">
+              <label for="materialMinimo">Quantidade Mínima</label>
+              <input type="number" id="materialMinimo" class="form-control" min="0" required placeholder="0">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="materialUnidade">Unidade de Medida</label>
+            <select id="materialUnidade" class="form-control" required>
+              <option value="">Selecione</option>
+              <option value="unidade">Unidade</option>
+              <option value="litro">Litro</option>
+              <option value="mililitro">Mililitro</option>
+              <option value="grama">Grama</option>
+              <option value="quilograma">Quilograma</option>
+              <option value="folha">Folha</option>
+              <option value="caixa">Caixa</option>
+              <option value="pacote">Pacote</option>
+            </select>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-secondary" id="btnCancelMaterial">Cancelar</button>
+            <button type="submit" class="btn-primary">Salvar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Confirmar Exclusão -->
+  <div class="modal" id="modalConfirmar">
+    <div class="modal-overlay" id="modalConfirmarOverlay"></div>
+    <div class="modal-content modal-small">
+      <div class="modal-header">
+        <h2 class="modal-title">Confirmar Exclusão</h2>
+        <button class="modal-close" id="btnCloseModalConfirmar">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="confirm-message" id="confirmMessage"></p>
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" id="btnCancelConfirmar">Cancelar</button>
+          <button type="button" class="btn-danger" id="btnConfirmarExclusao">Excluir</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">
+    <div class="toast-content">
+      <i data-lucide="check-circle" class="toast-icon"></i>
+      <span class="toast-message" id="toastMessage"></span>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/admin.js"></script>
+</body>
+
+</html>

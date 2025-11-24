@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel do Professor - ETEC Júlio de Mesquita</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;600;700&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/professor.css">
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <div class="logos">
+          <div class="logo-etec">
+            <img src="images/logo-etec.png" alt="ETEC Júlio de Mesquita" class="logo-img">
+          </div>
+          <div class="logo-cps">
+            <img src="images/logo-cps.png" alt="Centro Paula Souza" class="logo-img">
+          </div>
+        </div>
+        <div class="user-menu">
+          <span class="user-name">Professor</span>
+          <button class="btn-logout" id="btnLogout">
+            <i data-lucide="log-out"></i>
+            Sair
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="header-bar"></div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <!-- Page Title -->
+      <div class="page-header">
+        <h1 class="page-title">Bem-vindo, Professor</h1>
+        <p class="page-subtitle">Painel do Professor - Sistema de Laboratórios</p>
+      </div>
+
+      <!-- Action Cards -->
+      <div class="action-cards">
+        <!-- Card: Calendário -->
+        <div class="action-card" onclick="window.location.href='calendario.html'">
+          <div class="card-icon">
+            <i data-lucide="calendar"></i>
+          </div>
+          <h3 class="card-title">Calendário</h3>
+          <p class="card-description">Visualize as reservas e datas disponíveis</p>
+        </div>
+
+        <!-- Card: Reservar -->
+        <div class="action-card" onclick="window.location.href='reservar.html'">
+          <div class="card-icon">
+            <i data-lucide="clipboard-check"></i>
+          </div>
+          <h3 class="card-title">Reservar</h3>
+          <p class="card-description">Faça uma nova reserva de laboratório</p>
+        </div>
+
+        <!-- Card: Kits -->
+        <div class="action-card" onclick="window.location.href='kits.html'">
+          <div class="card-icon">
+            <i data-lucide="package"></i>
+          </div>
+          <h3 class="card-title">Kits</h3>
+          <p class="card-description">Gerencie seus kits de materiais</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <div class="footer-bar"></div>
+
+  <!-- Scripts -->
+  <script src="js/professor.js"></script>
+</body>
+
+</html>

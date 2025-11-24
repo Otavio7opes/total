@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendário - ETEC Júlio de Mesquita</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;600;700&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/calendario.css">
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <div class="logos">
+          <div class="logo-etec">
+            <img src="images/logo-etec.png" alt="ETEC Júlio de Mesquita" class="logo-img">
+          </div>
+          <div class="logo-cps">
+            <img src="images/logo-cps.png" alt="Centro Paula Souza" class="logo-img">
+          </div>
+        </div>
+        <div class="user-menu">
+          <button class="btn-back" onclick="window.location.href='index.html'">
+            <i data-lucide="arrow-left"></i>
+            Voltar
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="header-bar"></div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <!-- Page Title -->
+      <div class="page-header">
+        <h1 class="page-title">Calendário Acadêmico</h1>
+        <p class="page-subtitle">Clique em um dia para ver reservas ou fazer uma nova</p>
+      </div>
+
+      <!-- Calendar -->
+      <div class="calendar-container">
+        <div class="calendar">
+          <div class="calendar-header">
+            <button class="btn-nav" id="prevBtn">
+              <i data-lucide="chevron-left"></i>
+            </button>
+            <div class="month-year" id="monthYear"></div>
+            <button class="btn-nav" id="nextBtn">
+              <i data-lucide="chevron-right"></i>
+            </button>
+          </div>
+          
+          <div class="calendar-body">
+            <div class="days-header">
+              <div class="day-name">Dom</div>
+              <div class="day-name">Seg</div>
+              <div class="day-name">Ter</div>
+              <div class="day-name">Qua</div>
+              <div class="day-name">Qui</div>
+              <div class="day-name">Sex</div>
+              <div class="day-name">Sáb</div>
+            </div>
+            
+            <div class="dates-grid" id="datesGrid">
+              <!-- Datas serão geradas via JavaScript -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Legenda -->
+        <div class="calendar-legend">
+          <h3 class="legend-title">Legenda</h3>
+          <div class="legend-items">
+            <div class="legend-item">
+              <span class="legend-color today"></span>
+              <span>Hoje</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-color reserved"></span>
+              <span>Reservado</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-color available"></span>
+              <span>Disponível</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Painel do Dia Selecionado -->
+      <div class="day-panel" id="dayPanel" style="display: none;">
+        <div class="panel-header">
+          <h2 class="panel-title" id="panelTitle"></h2>
+          <button class="btn-close-panel" id="btnClosePanel">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+
+        <!-- Reservas Existentes -->
+        <div class="existing-reservations" id="existingReservations">
+          <!-- Reservas serão carregadas via JavaScript -->
+        </div>
+
+        <!-- Botão Nova Reserva -->
+        <div class="new-reservation-action">
+          <button class="btn-primary btn-large" id="btnNovaReserva">
+            <i data-lucide="plus"></i>
+            Nova Reserva para este Dia
+          </button>
+        </div>
+
+        <!-- Formulário de Reserva (oculto inicialmente) -->
+        <div class="reservation-form-container" id="reservationFormContainer" style="display: none;">
+          <h3 class="form-title">
+            <i data-lucide="clipboard-check"></i>
+            Fazer Reserva
+          </h3>
+          
+          <form id="formReserva" class="reservation-form">
+            <!-- Laboratório -->
+            <div class="form-group">
+              <label for="laboratorio">Laboratório</label>
+              <select id="laboratorio" class="form-control" required>
+                <option value="">Escolha um laboratório</option>
+                <option value="1">Laboratório 1</option>
+                <option value="2">Laboratório 2</option>
+                <option value="3">Laboratório 3</option>
+                <option value="4">Laboratório 4</option>
+              </select>
+            </div>
+
+            <!-- Horários -->
+            <div class="form-row">
+              <div class="form-group">
+                <label for="horarioInicio">Horário Início</label>
+                <input type="time" id="horarioInicio" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label for="horarioFim">Horário Fim</label>
+                <input type="time" id="horarioFim" class="form-control" required>
+              </div>
+            </div>
+
+            <!-- Kit -->
+            <div class="form-group">
+              <label for="kit">Kit de Materiais</label>
+              <div class="kit-selection">
+                <select id="kit" class="form-control" required>
+                  <option value="">Escolha um kit</option>
+                  <!-- Kits serão carregados via JavaScript -->
+                </select>
+                <button type="button" class="btn-secondary btn-sm" onclick="window.open('kits.html', '_blank')">
+                  <i data-lucide="settings"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Observações -->
+            <div class="form-group">
+              <label for="observacoes">Observações (Opcional)</label>
+              <textarea id="observacoes" class="form-control" rows="3" placeholder="Detalhes sobre a aula..."></textarea>
+            </div>
+
+            <!-- Botões -->
+            <div class="form-actions">
+              <button type="button" class="btn-secondary" id="btnCancelarReserva">Cancelar</button>
+              <button type="submit" class="btn-primary">
+                <i data-lucide="check"></i>
+                Confirmar Reserva
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <div class="footer-bar"></div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">
+    <div class="toast-content">
+      <i data-lucide="check-circle" class="toast-icon"></i>
+      <span class="toast-message" id="toastMessage"></span>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/calendario.js"></script>
+</body>
+
+</html>
