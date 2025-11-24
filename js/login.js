@@ -3,12 +3,12 @@
 // ====================================
 const credentials = {
   professor: {
-    email: 'maria@professor.com',
+    email: 'ana.silva@etec.sp.gov.br',
     password: 'ppp',
     redirect: 'professor.html'
   },
   admin: {
-    email: 'john@admin.com',
+    email: 'joao.oliveira@etec.sp.gov.br',
     password: 'aaa',
     showMenu: true
   }
