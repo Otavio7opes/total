@@ -3,23 +3,14 @@
 // ====================================
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Inicializa os ícones Lucide
   lucide.createIcons();
   
-  // Event Listeners para os cards
   const cardCalendario = document.getElementById('cardCalendario');
-  const cardReservar = document.getElementById('cardReservar');
   const cardKits = document.getElementById('cardKits');
   
   if (cardCalendario) {
     cardCalendario.addEventListener('click', () => {
       window.location.href = 'calendario.html';
-    });
-  }
-  
-  if (cardReservar) {
-    cardReservar.addEventListener('click', () => {
-      window.location.href = 'reservar.html';
     });
   }
   
@@ -29,13 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   
-  // Adiciona animação nos cards
   animateCards();
 });
-
-// ====================================
-// FUNÇÕES
-// ====================================
 
 function animateCards() {
   const cards = document.querySelectorAll('.action-card');

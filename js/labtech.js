@@ -1,64 +1,8 @@
 // ====================================
-// DADOS INICIAIS (Simulação de Backend)
+// LABTECH.JS ATUALIZADO
 // ====================================
 
-let reservas = [
-  {
-    id: 1,
-    professor: 'Prof. Ana Silva',
-    data: '23/08/2025',
-    horario: '10:00 - 12:00',
-    laboratorio: 'Laboratório 3',
-    materiais: [
-      { nome: 'Béquer 50ml', checked: false },
-      { nome: 'Ácido clorídrico', checked: false },
-      { nome: 'Pipeta', checked: false },
-      { nome: 'Erlenmyer 250ml', checked: false }
-    ],
-    status: 'pendente'
-  },
-  {
-    id: 2,
-    professor: 'Prof. Carlos Mendes',
-    data: '24/08/2025',
-    horario: '14:00 - 16:00',
-    laboratorio: 'Laboratório 1',
-    materiais: [
-      { nome: 'Tubo de ensaio', checked: false },
-      { nome: 'Hidróxido de sódio', checked: false },
-      { nome: 'Pipeta', checked: false },
-      { nome: 'Proveta 100ml', checked: false }
-    ],
-    status: 'pendente'
-  },
-  {
-    id: 3,
-    professor: 'Prof. Maria Santos',
-    data: '25/08/2025',
-    horario: '08:00 - 10:00',
-    laboratorio: 'Laboratório 2',
-    materiais: [
-      { nome: 'Béquer 50ml', checked: false },
-      { nome: 'Balança analítica', checked: false },
-      { nome: 'Espátula', checked: false },
-      { nome: 'Papel de filtro', checked: false }
-    ],
-    status: 'pendente'
-  }
-];
-
-let estoque = [
-  { id: 1, nome: 'Béquer 50ml', quantidade: 45, unidade: 'unidade', minimo: 20 },
-  { id: 2, nome: 'Ácido Clorídrico', quantidade: 15, unidade: 'litro', minimo: 10 },
-  { id: 3, nome: 'Pipeta', quantidade: 30, unidade: 'unidade', minimo: 15 },
-  { id: 4, nome: 'Erlenmyer 250ml', quantidade: 25, unidade: 'unidade', minimo: 10 },
-  { id: 5, nome: 'Tubo de ensaio', quantidade: 80, unidade: 'unidade', minimo: 40 },
-  { id: 6, nome: 'Hidróxido de sódio', quantidade: 8, unidade: 'quilograma', minimo: 5 },
-  { id: 7, nome: 'Proveta 100ml', quantidade: 18, unidade: 'unidade', minimo: 10 },
-  { id: 8, nome: 'Balança analítica', quantidade: 6, unidade: 'unidade', minimo: 3 },
-  { id: 9, nome: 'Espátula', quantidade: 35, unidade: 'unidade', minimo: 20 },
-  { id: 10, nome: 'Papel de filtro', quantidade: 100, unidade: 'folha', minimo: 50 }
-];
+// IMPORTANTE: Certifique-se de incluir storage.js antes deste arquivo no HTML
 
 // ====================================
 // ELEMENTOS DO DOM
@@ -102,6 +46,13 @@ const toastMessage = document.getElementById('toastMessage');
 // ====================================
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Verifica se o usuário está logado
+  const currentUser = getCurrentUser();
+  if (!currentUser || (currentUser.tipo !== 'Administrador' && currentUser.tipo !== 'Técnico')) {
+    window.location.href = 'login.html';
+    return;
+  }
+  
   lucide.createIcons();
   renderReservations();
   
@@ -130,10 +81,12 @@ document.addEventListener('DOMContentLoaded', () => {
 // ====================================
 
 function renderReservations() {
+  const reservas = getReservations().filter(r => r.status === 'pendente');
+  
   if (reservas.length === 0) {
     reservationsList.innerHTML = `
       <div style="text-align: center; padding: 3rem; color: var(--color-gray-500);">
-        <p>Nenhuma reserva encontrada.</p>
+        <p>Nenhuma reserva pendente encontrada.</p>
       </div>
     `;
     return;
@@ -147,19 +100,19 @@ function renderReservations() {
       <div class="reservation-card" data-id="${reserva.id}">
         <div class="reservation-header">
           <div class="reservation-info">
-            <h3>${reserva.professor}</h3>
+            <h3>${reserva.professorNome}</h3>
             <div class="reservation-details">
               <div class="detail-item">
                 <i data-lucide="calendar"></i>
-                <span>${reserva.data}</span>
+                <span>${formatDateBR(reserva.data)}</span>
               </div>
               <div class="detail-item">
                 <i data-lucide="clock"></i>
-                <span>${reserva.horario}</span>
+                <span>${reserva.horarioInicio} - ${reserva.horarioFim}</span>
               </div>
               <div class="detail-item reservation-lab">
                 <i data-lucide="flask-conical"></i>
-                <span>${reserva.laboratorio}</span>
+                <span>Laboratório ${reserva.laboratorioId}</span>
               </div>
             </div>
           </div>
@@ -182,7 +135,7 @@ function renderReservations() {
                   onchange="handleMaterialCheck(${reserva.id}, ${index})"
                 >
                 <label for="material-${reserva.id}-${index}" class="material-label">
-                  ${material.nome}
+                  ${material.nome} (${material.quantidade})
                 </label>
               </div>
             `).join('')}
@@ -229,13 +182,19 @@ function getActionsHTML(reserva) {
       <button class="btn-secondary" onclick="openModalProblema(${reserva.id})">
         Relatar Perda/Quebra
       </button>
+      <button class="btn-danger" onclick="handleDeleteReservation(${reserva.id})" style="margin-left: 0.5rem;">
+        <i data-lucide="trash-2"></i>
+        Excluir Reserva
+      </button>
     `;
   }
   return '';
 }
 
-function renderEstoque(filteredEstoque = estoque) {
-  if (filteredEstoque.length === 0) {
+function renderEstoque(filteredEstoque = null) {
+  const estoque = filteredEstoque || getMaterials();
+  
+  if (estoque.length === 0) {
     estoqueList.innerHTML = `
       <div style="text-align: center; padding: 2rem; color: var(--color-gray-500);">
         <p>Nenhum material encontrado.</p>
@@ -244,7 +203,7 @@ function renderEstoque(filteredEstoque = estoque) {
     return;
   }
   
-  estoqueList.innerHTML = filteredEstoque.map(item => {
+  estoqueList.innerHTML = estoque.map(item => {
     const isLow = item.quantidade <= item.minimo;
     const badgeClass = isLow ? 'low' : 'ok';
     const badgeText = isLow ? 'Baixo' : 'OK';
@@ -280,18 +239,26 @@ function renderEstoque(filteredEstoque = estoque) {
 // ====================================
 
 function handleMaterialCheck(reservaId, materialIndex) {
+  const reservas = getReservations();
   const reserva = reservas.find(r => r.id === reservaId);
   if (reserva) {
     reserva.materiais[materialIndex].checked = !reserva.materiais[materialIndex].checked;
+    saveReservations(reservas);
   }
 }
 
 function handleConfirmarSeparacao(reservaId) {
-  const reserva = reservas.find(r => r.id === reservaId);
-  if (reserva) {
-    reserva.status = 'confirmado';
+  updateReservation(reservaId, { status: 'confirmado' });
+  renderReservations();
+  showToast('Separação confirmada com sucesso!');
+}
+
+// Adicione esta função após handleConfirmarSeparacao
+function handleDeleteReservation(reservaId) {
+  if (confirm('Tem certeza que deseja excluir esta reserva? Os materiais serão devolvidos ao estoque.')) {
+    deleteReservation(reservaId);
     renderReservations();
-    showToast('Separação confirmada com sucesso!');
+    showToast('Reserva excluída com sucesso!');
   }
 }
 
@@ -303,10 +270,11 @@ let currentProblemaReservaId = null;
 
 function openModalProblema(reservaId) {
   currentProblemaReservaId = reservaId;
+  const reservas = getReservations();
   const reserva = reservas.find(r => r.id === reservaId);
   
   if (reserva) {
-    document.getElementById('problemaReserva').value = `${reserva.professor} - ${reserva.laboratorio}`;
+    document.getElementById('problemaReserva').value = `${reserva.professorNome} - Laboratório ${reserva.laboratorioId}`;
     
     const selectMaterial = document.getElementById('problemaMaterial');
     selectMaterial.innerHTML = '<option value="">Selecione o material</option>' +
@@ -327,16 +295,12 @@ function handleSubmitProblema(e) {
   
   const material = document.getElementById('problemaMaterial').value;
   const tipo = document.getElementById('problemaTipo').value;
-  const quantidade = document.getElementById('problemaQuantidade').value;
+  const quantidade = parseInt(document.getElementById('problemaQuantidade').value);
   
-  const reserva = reservas.find(r => r.id === currentProblemaReservaId);
-  if (reserva) {
-    reserva.status = 'problema';
-  }
+  updateReservation(currentProblemaReservaId, { status: 'problema' });
   
-  const itemEstoque = estoque.find(e => e.nome === material);
-  if (itemEstoque && (tipo === 'quebra' || tipo === 'perda')) {
-    itemEstoque.quantidade = Math.max(0, itemEstoque.quantidade - parseInt(quantidade));
+  if (tipo === 'quebra' || tipo === 'perda') {
+    updateMaterialQuantity(material, -quantidade);
   }
   
   closeModalProblema();
@@ -360,6 +324,7 @@ function closeModalEstoque() {
 
 function handleSearchEstoque(e) {
   const searchTerm = e.target.value.toLowerCase();
+  const estoque = getMaterials();
   const filtered = estoque.filter(item => 
     item.nome.toLowerCase().includes(searchTerm)
   );
@@ -374,7 +339,8 @@ let currentEditMaterialId = null;
 
 function openModalEditarQuantidade(materialId) {
   currentEditMaterialId = materialId;
-  const material = estoque.find(m => m.id === materialId);
+  const materiais = getMaterials();
+  const material = materiais.find(m => m.id === materialId);
   
   if (material) {
     labelMaterialNome.textContent = material.nome;
@@ -402,10 +368,12 @@ function handleSubmitEditarQuantidade(e) {
   const novaQuantidade = parseInt(inputNovaQuantidade.value);
   const motivo = document.getElementById('motivoAjuste').value;
   
-  const material = estoque.find(m => m.id === currentEditMaterialId);
+  const materiais = getMaterials();
+  const material = materiais.find(m => m.id === currentEditMaterialId);
+  
   if (material) {
     const quantidadeAnterior = material.quantidade;
-    material.quantidade = novaQuantidade;
+    updateMaterial(currentEditMaterialId, { quantidade: novaQuantidade });
     
     closeModalEditarQuantidade();
     renderEstoque();
@@ -414,6 +382,15 @@ function handleSubmitEditarQuantidade(e) {
     const diffText = diff > 0 ? `+${diff}` : diff;
     showToast(`${material.nome}: ${diffText} ${material.unidade} (${motivo})`);
   }
+}
+
+// ====================================
+// UTILITÁRIOS
+// ====================================
+
+function formatDateBR(dateString) {
+  const [year, month, day] = dateString.split('-');
+  return `${day}/${month}/${year}`;
 }
 
 // ====================================

@@ -1,32 +1,8 @@
 // ====================================
-// DADOS SIMULADOS
+// CALENDARIO.JS ATUALIZADO
 // ====================================
 
-const reservasExistentes = [
-  {
-    id: 1,
-    data: '2025-11-15',
-    horario: '10:00 - 12:00',
-    professor: 'Prof. João Silva',
-    laboratorio: 'Laboratório 3',
-    kit: 'Kit Ácidos e Bases'
-  },
-  {
-    id: 2,
-    data: '2025-11-20',
-    horario: '14:00 - 16:00',
-    professor: 'Prof. Maria Santos',
-    laboratorio: 'Laboratório 1',
-    kit: 'Kit Vidrarias'
-  }
-];
-
-const kitsDisponiveis = [
-  { id: 1, nome: 'Kit Ácidos e Bases' },
-  { id: 2, nome: 'Kit Vidrarias Básicas' },
-  { id: 3, nome: 'Kit Titulação' },
-  { id: 4, nome: 'Kit Microscopia' }
-];
+// IMPORTANTE: Certifique-se de incluir storage.js antes deste arquivo no HTML
 
 // ====================================
 // VARIÁVEIS GLOBAIS
@@ -56,6 +32,13 @@ const toastMessage = document.getElementById('toastMessage');
 // ====================================
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Verifica se o usuário está logado
+  const currentUser = getCurrentUser();
+  if (!currentUser || currentUser.tipo !== 'Professor') {
+    window.location.href = 'login.html';
+    return;
+  }
+  
   lucide.createIcons();
   updateCalendar();
   loadKits();
@@ -142,7 +125,8 @@ function selectDate(dateString) {
 }
 
 function hasReservation(dateString) {
-  return reservasExistentes.some(r => r.data === dateString);
+  const reservas = getReservationsByDate(dateString);
+  return reservas.length > 0;
 }
 
 function formatDate(date) {
@@ -168,7 +152,7 @@ function formatDateBR(dateString) {
 // ====================================
 
 function showDayPanel(dateString) {
-  const reservas = reservasExistentes.filter(r => r.data === dateString);
+  const reservas = getReservationsByDate(dateString);
   
   panelTitle.textContent = formatDateBR(dateString);
   
@@ -180,27 +164,33 @@ function showDayPanel(dateString) {
       </div>
     `;
   } else {
-    existingReservations.innerHTML = reservas.map(reserva => `
-      <div class="reservation-item">
-        <div class="reservation-header">
-          <div>
-            <div class="reservation-title">${reserva.professor}</div>
-            <div class="reservation-lab">
-              <i data-lucide="flask-conical"></i>
-              ${reserva.laboratorio}
+    existingReservations.innerHTML = reservas.map(reserva => {
+      const kit = getKits().find(k => k.id == reserva.kitId);
+      const kitNome = kit ? kit.nome : 'Kit não encontrado';
+      
+      return `
+        <div class="reservation-item">
+          <div class="reservation-header">
+            <div>
+              <div class="reservation-title">${reserva.professorNome}</div>
+              <div class="reservation-lab">
+                <i data-lucide="flask-conical"></i>
+                Laboratório ${reserva.laboratorioId}
+              </div>
+            </div>
+            <div class="reservation-time">
+              <i data-lucide="clock"></i>
+              ${reserva.horarioInicio} - ${reserva.horarioFim}
             </div>
           </div>
-          <div class="reservation-time">
-            <i data-lucide="clock"></i>
-            ${reserva.horario}
+          <div class="reservation-kit">
+            <i data-lucide="package"></i>
+            ${kitNome}
           </div>
+          ${reserva.observacoes ? `<div style="margin-top: 0.5rem; color: var(--color-gray-600); font-size: 0.875rem;">${reserva.observacoes}</div>` : ''}
         </div>
-        <div class="reservation-kit">
-          <i data-lucide="package"></i>
-          ${reserva.kit}
-        </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
   }
   
   // Preenche a data no formulário
@@ -245,8 +235,11 @@ function hideReservationForm() {
 }
 
 function loadKits() {
+  const currentUser = getCurrentUser();
+  const kits = getKitsByProfessor(currentUser.id);
+  
   kitSelect.innerHTML = '<option value="">Escolha um kit</option>';
-  kitsDisponiveis.forEach(kit => {
+  kits.forEach(kit => {
     const option = document.createElement('option');
     option.value = kit.id;
     option.textContent = kit.nome;
@@ -257,21 +250,15 @@ function loadKits() {
 function handleSubmitReserva(e) {
   e.preventDefault();
   
-  const reservaData = {
-    laboratorio_id: document.getElementById('laboratorio').value,
-    data: selectedDate,
-    horario_inicio: document.getElementById('horarioInicio').value,
-    horario_fim: document.getElementById('horarioFim').value,
-    kit_id: document.getElementById('kit').value,
-    observacoes: document.getElementById('observacoes').value,
-    professor_id: 1
-  };
+  const laboratorioId = document.getElementById('laboratorio').value;
+  const horarioInicio = document.getElementById('horarioInicio').value;
+  const horarioFim = document.getElementById('horarioFim').value;
+  const kitId = document.getElementById('kit').value;
+  const observacoes = document.getElementById('observacoes').value;
   
   // Validações
-  const horarioInicio = reservaData.horario_inicio.split(':');
-  const horarioFim = reservaData.horario_fim.split(':');
-  const minutosInicio = parseInt(horarioInicio[0]) * 60 + parseInt(horarioInicio[1]);
-  const minutosFim = parseInt(horarioFim[0]) * 60 + parseInt(horarioFim[1]);
+  const minutosInicio = convertTimeToMinutes(horarioInicio);
+  const minutosFim = convertTimeToMinutes(horarioFim);
   
   if (minutosFim <= minutosInicio) {
     alert('O horário de fim deve ser posterior ao horário de início');
@@ -283,22 +270,35 @@ function handleSubmitReserva(e) {
     return;
   }
   
-  console.log('Enviando reserva:', reservaData);
+  // Busca os materiais do kit
+  const kit = getKits().find(k => k.id == kitId);
+  const materiais = kit ? kit.itens.map(item => ({
+    nome: item.nome,
+    quantidade: item.quantidade,
+    checked: false
+  })) : [];
   
-  // Simula sucesso
-  const kitNome = kitsDisponiveis.find(k => k.id == reservaData.kit_id)?.nome || 'Kit';
-  reservasExistentes.push({
-    id: Date.now(),
-    data: reservaData.data,
-    horario: `${reservaData.horario_inicio} - ${reservaData.horario_fim}`,
-    professor: 'Você',
-    laboratorio: `Laboratório ${reservaData.laboratorio_id}`,
-    kit: kitNome
-  });
+  // Cria a reserva
+  const reservaData = {
+    laboratorioId,
+    data: selectedDate,
+    horarioInicio,
+    horarioFim,
+    kitId,
+    observacoes,
+    materiais
+  };
+  
+  addReservation(reservaData);
   
   showToast('Reserva realizada com sucesso!');
   updateCalendar();
   showDayPanel(selectedDate);
+}
+
+function convertTimeToMinutes(time) {
+  const [hours, minutes] = time.split(':').map(Number);
+  return hours * 60 + minutes;
 }
 
 // ====================================

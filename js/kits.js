@@ -1,48 +1,10 @@
 // ====================================
-// DADOS SIMULADOS
+// KITS.JS ATUALIZADO COM SELEÇÃO DE ESTOQUE
 // ====================================
-
-let kits = [
-  {
-    id: 1,
-    nome: 'Kit Ácidos e Bases',
-    descricao: 'Experimentos de pH e neutralização',
-    itens: [
-      { tipo: 'Reagente', nome: 'Ácido Clorídrico', quantidade: 2 },
-      { tipo: 'Reagente', nome: 'Hidróxido de Sódio', quantidade: 2 },
-      { tipo: 'Vidraria', nome: 'Béquer 50ml', quantidade: 4 },
-      { tipo: 'Vidraria', nome: 'Pipeta', quantidade: 4 }
-    ]
-  },
-  {
-    id: 2,
-    nome: 'Kit Vidrarias Básicas',
-    descricao: 'Conjunto essencial de vidrarias',
-    itens: [
-      { tipo: 'Vidraria', nome: 'Erlenmyer 250ml', quantidade: 6 },
-      { tipo: 'Vidraria', nome: 'Proveta 100ml', quantidade: 4 },
-      { tipo: 'Vidraria', nome: 'Tubo de ensaio', quantidade: 12 }
-    ]
-  },
-  {
-    id: 3,
-    nome: 'Kit Titulação',
-    descricao: 'Para experimentos de titulação',
-    itens: [
-      { tipo: 'Vidraria', nome: 'Bureta', quantidade: 2 },
-      { tipo: 'Reagente', nome: 'Indicador Fenolftaleína', quantidade: 1 },
-      { tipo: 'Vidraria', nome: 'Erlenmyer 125ml', quantidade: 4 }
-    ]
-  }
-];
 
 let currentEditKitId = null;
 let currentDeleteKitId = null;
 let currentKitItems = [];
-
-// ====================================
-// ELEMENTOS DO DOM
-// ====================================
 
 const kitsGrid = document.getElementById('kitsGrid');
 const searchKit = document.getElementById('searchKit');
@@ -60,7 +22,7 @@ const kitDescricaoTextarea = document.getElementById('kitDescricao');
 
 // Adicionar Itens
 const itemTipoSelect = document.getElementById('itemTipo');
-const itemNomeInput = document.getElementById('itemNome');
+const itemNomeSelect = document.getElementById('itemNome');
 const itemQuantidadeInput = document.getElementById('itemQuantidade');
 const btnAddItem = document.getElementById('btnAddItem');
 const itensList = document.getElementById('itensList');
@@ -91,10 +53,15 @@ const toastMessage = document.getElementById('toastMessage');
 // ====================================
 
 document.addEventListener('DOMContentLoaded', () => {
+  const currentUser = getCurrentUser();
+  if (!currentUser || currentUser.tipo !== 'Professor') {
+    window.location.href = 'login.html';
+    return;
+  }
+  
   lucide.createIcons();
   renderKits();
   
-  // Event Listeners
   btnNovoKit.addEventListener('click', openModalNovoKit);
   btnCloseModalKit.addEventListener('click', closeModalKit);
   modalKitOverlay.addEventListener('click', closeModalKit);
@@ -103,12 +70,13 @@ document.addEventListener('DOMContentLoaded', () => {
   btnAddItem.addEventListener('click', handleAddItem);
   searchKit.addEventListener('input', handleSearch);
   
-  // Modal View
+  // Atualiza lista de materiais quando tipo muda
+  itemTipoSelect.addEventListener('change', updateMaterialOptions);
+  
   btnCloseModalViewKit.addEventListener('click', closeModalViewKit);
   modalViewKitOverlay.addEventListener('click', closeModalViewKit);
   btnCloseView.addEventListener('click', closeModalViewKit);
   
-  // Modal Confirmar
   btnCloseModalConfirmar.addEventListener('click', closeModalConfirmar);
   modalConfirmarOverlay.addEventListener('click', closeModalConfirmar);
   btnCancelConfirmar.addEventListener('click', closeModalConfirmar);
@@ -116,11 +84,41 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ====================================
+// ATUALIZAR OPÇÕES DE MATERIAIS
+// ====================================
+
+function updateMaterialOptions() {
+  const tipo = itemTipoSelect.value;
+  itemNomeSelect.innerHTML = '<option value="">Selecione o material</option>';
+  
+  if (tipo === 'Reagente') {
+    const reagentes = getReagentes();
+    reagentes.forEach(reagente => {
+      const option = document.createElement('option');
+      option.value = reagente.nome;
+      option.textContent = `${reagente.nome} (Disponível: ${reagente.quantidade}${reagente.unidade})`;
+      itemNomeSelect.appendChild(option);
+    });
+  } else if (tipo === 'Vidraria') {
+    const vidrarias = getVidrarias();
+    vidrarias.forEach(vidraria => {
+      const option = document.createElement('option');
+      option.value = vidraria.nome;
+      option.textContent = `${vidraria.nome} (Disponível: ${vidraria.quantidade}${vidraria.unidade})`;
+      itemNomeSelect.appendChild(option);
+    });
+  }
+}
+
+// ====================================
 // RENDERIZAR KITS
 // ====================================
 
-function renderKits(filteredKits = kits) {
-  if (filteredKits.length === 0) {
+function renderKits(filteredKits = null) {
+  const currentUser = getCurrentUser();
+  const kits = filteredKits || getKitsByProfessor(currentUser.id);
+  
+  if (kits.length === 0) {
     kitsGrid.innerHTML = `
       <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--color-gray-500);">
         <i data-lucide="package" style="width: 64px; height: 64px; margin-bottom: 1rem;"></i>
@@ -131,7 +129,7 @@ function renderKits(filteredKits = kits) {
     return;
   }
   
-  kitsGrid.innerHTML = filteredKits.map(kit => `
+  kitsGrid.innerHTML = kits.map(kit => `
     <div class="kit-card" onclick="openModalViewKit(${kit.id})">
       <div class="kit-icon">
         <i data-lucide="package"></i>
@@ -162,7 +160,10 @@ function renderKits(filteredKits = kits) {
 
 function handleSearch(e) {
   const searchTerm = e.target.value.toLowerCase();
-  const filtered = kits.filter(kit => 
+  const currentUser = getCurrentUser();
+  const allKits = getKitsByProfessor(currentUser.id);
+  
+  const filtered = allKits.filter(kit => 
     kit.nome.toLowerCase().includes(searchTerm) ||
     (kit.descricao && kit.descricao.toLowerCase().includes(searchTerm))
   );
@@ -184,6 +185,7 @@ function openModalNovoKit() {
 
 function openModalEditKit(id) {
   currentEditKitId = id;
+  const kits = getKits();
   const kit = kits.find(k => k.id === id);
   
   if (kit) {
@@ -209,19 +211,33 @@ function closeModalKit() {
 
 function handleAddItem() {
   const tipo = itemTipoSelect.value;
-  const nome = itemNomeInput.value.trim();
-  const quantidade = parseInt(itemQuantidadeInput.value);
+  const nome = itemNomeSelect.value;
+  const quantidade = parseFloat(itemQuantidadeInput.value);
   
   if (!tipo || !nome || !quantidade || quantidade <= 0) {
     alert('Preencha todos os campos do item');
     return;
   }
   
+  // Verifica disponibilidade no estoque
+  let disponivel = 0;
+  if (tipo === 'Reagente') {
+    const reagente = getReagentes().find(r => r.nome === nome);
+    disponivel = reagente ? reagente.quantidade : 0;
+  } else if (tipo === 'Vidraria') {
+    const vidraria = getVidrarias().find(v => v.nome === nome);
+    disponivel = vidraria ? vidraria.quantidade : 0;
+  }
+  
+  if (quantidade > disponivel) {
+    alert(`Quantidade solicitada (${quantidade}) excede o disponível em estoque (${disponivel})`);
+    return;
+  }
+  
   currentKitItems.push({ tipo, nome, quantidade });
   
-  // Limpa os campos
   itemTipoSelect.value = '';
-  itemNomeInput.value = '';
+  itemNomeSelect.innerHTML = '<option value="">Selecione o material</option>';
   itemQuantidadeInput.value = '';
   
   renderItemsList();
@@ -278,45 +294,23 @@ function handleSubmitKit(e) {
   }
   
   if (currentEditKitId) {
-    // Editar kit existente
-    const index = kits.findIndex(k => k.id === currentEditKitId);
-    if (index !== -1) {
-      kits[index] = {
-        ...kits[index],
-        nome,
-        descricao,
-        itens: [...currentKitItems]
-      };
-      showToast('Kit atualizado com sucesso!');
-    }
-  } else {
-    // Criar novo kit
-    const novoKit = {
-      id: Date.now(),
+    updateKit(currentEditKitId, {
       nome,
       descricao,
       itens: [...currentKitItems]
-    };
-    kits.push(novoKit);
+    });
+    showToast('Kit atualizado com sucesso!');
+  } else {
+    addKit({
+      nome,
+      descricao,
+      itens: [...currentKitItems]
+    });
     showToast('Kit criado com sucesso!');
   }
   
   closeModalKit();
   renderKits();
-  
-  // Em produção, você faria:
-  /*
-  fetch('/api/kits', {
-    method: currentEditKitId ? 'PUT' : 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ nome, descricao, itens: currentKitItems })
-  })
-  .then(response => response.json())
-  .then(data => {
-    showToast(currentEditKitId ? 'Kit atualizado!' : 'Kit criado!');
-    loadKits(); // Recarrega da API
-  });
-  */
 }
 
 // ====================================
@@ -324,6 +318,7 @@ function handleSubmitKit(e) {
 // ====================================
 
 function openModalViewKit(id) {
+  const kits = getKits();
   const kit = kits.find(k => k.id === id);
   
   if (kit) {
@@ -357,6 +352,7 @@ function closeModalViewKit() {
 
 function openModalDeleteKit(id) {
   currentDeleteKitId = id;
+  const kits = getKits();
   const kit = kits.find(k => k.id === id);
   
   if (kit) {
@@ -371,19 +367,10 @@ function closeModalConfirmar() {
 }
 
 function handleConfirmarExclusao() {
-  kits = kits.filter(k => k.id !== currentDeleteKitId);
+  deleteKit(currentDeleteKitId);
   closeModalConfirmar();
   renderKits();
   showToast('Kit excluído com sucesso!');
-  
-  // Em produção:
-  /*
-  fetch(`/api/kits/${currentDeleteKitId}`, { method: 'DELETE' })
-    .then(() => {
-      showToast('Kit excluído!');
-      loadKits();
-    });
-  */
 }
 
 // ====================================
@@ -400,10 +387,6 @@ function showToast(message) {
   
   lucide.createIcons();
 }
-
-// ====================================
-// PREVENIR FECHAR MODAL AO CLICAR NO CONTEÚDO
-// ====================================
 
 document.querySelectorAll('.modal-content').forEach(content => {
   content.addEventListener('click', (e) => {

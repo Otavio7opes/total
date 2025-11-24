@@ -1,18 +1,8 @@
 // ====================================
-// CREDENCIAIS
+// LOGIN.JS ATUALIZADO
 // ====================================
-const credentials = {
-  professor: {
-    email: 'ana.silva@etec.sp.gov.br',
-    password: 'ppp',
-    redirect: 'professor.html'
-  },
-  admin: {
-    email: 'joao.oliveira@etec.sp.gov.br',
-    password: 'aaa',
-    showMenu: true
-  }
-};
+
+// IMPORTANTE: Certifique-se de incluir storage.js antes deste arquivo no HTML
 
 // ====================================
 // ELEMENTOS DO DOM
@@ -23,12 +13,6 @@ const passwordInput = document.getElementById('password');
 const loginForm = document.getElementById('loginForm');
 const adminMenu = document.getElementById('adminMenu');
 const btnBackToLogin = document.getElementById('btnBackToLogin');
-
-// Alert Modal
-const alertModal = document.getElementById('alertModal');
-const alertOverlay = document.getElementById('alertOverlay');
-const alertMessage = document.getElementById('alertMessage');
-const btnAlertOk = document.getElementById('btnAlertOk');
 
 // ====================================
 // INICIALIZAÇÃO
@@ -50,35 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnBackToLogin) {
     btnBackToLogin.addEventListener('click', showLoginForm);
   }
-  
-  // Alert Modal Listeners
-  if (btnAlertOk) {
-    btnAlertOk.addEventListener('click', closeAlert);
-  }
-  
-  if (alertOverlay) {
-    alertOverlay.addEventListener('click', closeAlert);
-  }
 });
-
-// ====================================
-// CUSTOM ALERT
-// ====================================
-function showAlert(message) {
-  if (alertMessage && alertModal) {
-    alertMessage.textContent = message;
-    alertModal.classList.add('active');
-    setTimeout(() => {
-      lucide.createIcons();
-    }, 10);
-  }
-}
-
-function closeAlert() {
-  if (alertModal) {
-    alertModal.classList.remove('active');
-  }
-}
 
 // ====================================
 // HANDLE LOGIN
@@ -87,26 +43,29 @@ function handleLogin(e) {
   e.preventDefault();
   
   const email = emailInput.value.trim();
-  const password = passwordInput.value;
+  const senha = passwordInput.value;
   
-  // Verifica professor
-  if (email === credentials.professor.email && password === credentials.professor.password) {
-    window.location.href = credentials.professor.redirect;
-    return;
+  // Tenta autenticar o usuário
+  const user = authenticateUser(email, senha);
+  
+  if (user) {
+    // Salva o usuário na sessão
+    setCurrentUser(user);
+    
+    // Redireciona baseado no tipo de usuário
+    if (user.tipo === 'Professor') {
+      window.location.href = 'professor.html';
+    } else if (user.tipo === 'Administrador' || user.tipo === 'Técnico') {
+      showAdminMenu();
+    }
+  } else {
+    // Credenciais inválidas
+    alert('E-mail ou senha incorretos. Por favor, tente novamente.');
+    passwordInput.value = '';
+    setTimeout(() => {
+      passwordInput.focus();
+    }, 100);
   }
-  
-  // Verifica admin
-  if (email === credentials.admin.email && password === credentials.admin.password) {
-    showAdminMenu();
-    return;
-  }
-  
-  // Credenciais inválidas
-  showAlert('Login not found, please try again.');
-  passwordInput.value = '';
-  setTimeout(() => {
-    passwordInput.focus();
-  }, 100);
 }
 
 // ====================================
@@ -131,18 +90,12 @@ function showLoginForm() {
     loginForm.style.display = 'block';
     emailInput.value = '';
     passwordInput.value = '';
+    
+    // Faz logout do usuário
+    logoutUser();
+    
     setTimeout(() => {
       lucide.createIcons();
     }, 10);
   }
-}
-
-// ====================================
-// PREVENIR FECHAR MODAL AO CLICAR NO CONTEÚDO
-// ====================================
-const alertContent = document.querySelector('.alert-content');
-if (alertContent) {
-  alertContent.addEventListener('click', (e) => {
-    e.stopPropagation();
-  });
 }

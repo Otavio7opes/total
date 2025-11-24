@@ -1,45 +1,25 @@
 // ====================================
-// DADOS INICIAIS (Simulação de Backend)
-// ====================================
-
-let usuarios = [
-  { id: 1, nome: 'Prof. Ana Silva', email: 'ana.silva@etec.sp.gov.br', tipo: 'Professor' },
-  { id: 2, nome: 'Carlos Mendes', email: 'carlos.mendes@etec.sp.gov.br', tipo: 'Técnico' },
-  { id: 3, nome: 'Prof. Maria Santos', email: 'maria.santos@etec.sp.gov.br', tipo: 'Professor' },
-  { id: 4, nome: 'João Oliveira', email: 'joao.oliveira@etec.sp.gov.br', tipo: 'Administrador' }
-];
-
-let materiais = [
-  { id: 1, nome: 'Béquer 50ml', quantidade: 45, unidade: 'unidade', minimo: 20 },
-  { id: 2, nome: 'Ácido Clorídrico', quantidade: 15, unidade: 'litro', minimo: 10 },
-  { id: 3, nome: 'Pipeta', quantidade: 30, unidade: 'unidade', minimo: 15 },
-  { id: 4, nome: 'Erlenmyer 250ml', quantidade: 25, unidade: 'unidade', minimo: 10 },
-  { id: 5, nome: 'Tubo de ensaio', quantidade: 80, unidade: 'unidade', minimo: 40 },
-  { id: 6, nome: 'Hidróxido de sódio', quantidade: 8, unidade: 'quilograma', minimo: 15 },
-  { id: 7, nome: 'Proveta 100ml', quantidade: 18, unidade: 'unidade', minimo: 10 },
-  { id: 8, nome: 'Balança analítica', quantidade: 6, unidade: 'unidade', minimo: 3 },
-  { id: 9, nome: 'Espátula', quantidade: 35, unidade: 'unidade', minimo: 20 },
-  { id: 10, nome: 'Papel de filtro', quantidade: 100, unidade: 'folha', minimo: 50 }
-];
-
-// ====================================
-// ELEMENTOS DO DOM
+// ADMIN.JS COMPLETO ATUALIZADO
 // ====================================
 
 // Tabs
 const tabUsuarios = document.getElementById('tabUsuarios');
-const tabMateriais = document.getElementById('tabMateriais');
+const tabReagentes = document.getElementById('tabReagentes');
+const tabVidrarias = document.getElementById('tabVidrarias');
 const contentUsuarios = document.getElementById('contentUsuarios');
-const contentMateriais = document.getElementById('contentMateriais');
+const contentReagentes = document.getElementById('contentReagentes');
+const contentVidrarias = document.getElementById('contentVidrarias');
 
 // Botões principais
 const btnBack = document.getElementById('btnBack');
 const btnNovoUsuario = document.getElementById('btnNovoUsuario');
-const btnNovoMaterial = document.getElementById('btnNovoMaterial');
+const btnNovoReagente = document.getElementById('btnNovoReagente');
+const btnNovaVidraria = document.getElementById('btnNovaVidraria');
 
 // Tabelas
 const usuariosTableBody = document.getElementById('usuariosTableBody');
-const materiaisTableBody = document.getElementById('materiaisTableBody');
+const reagentesTableBody = document.getElementById('reagentesTableBody');
+const vidrariasTableBody = document.getElementById('vidrariasTableBody');
 
 // Modal Usuário
 const modalUsuario = document.getElementById('modalUsuario');
@@ -49,13 +29,21 @@ const modalUsuarioTitle = document.getElementById('modalUsuarioTitle');
 const formUsuario = document.getElementById('formUsuario');
 const btnCancelUsuario = document.getElementById('btnCancelUsuario');
 
-// Modal Material
-const modalMaterial = document.getElementById('modalMaterial');
-const modalMaterialOverlay = document.getElementById('modalMaterialOverlay');
-const btnCloseModalMaterial = document.getElementById('btnCloseModalMaterial');
-const modalMaterialTitle = document.getElementById('modalMaterialTitle');
-const formMaterial = document.getElementById('formMaterial');
-const btnCancelMaterial = document.getElementById('btnCancelMaterial');
+// Modal Reagente
+const modalReagente = document.getElementById('modalReagente');
+const modalReagenteOverlay = document.getElementById('modalReagenteOverlay');
+const btnCloseModalReagente = document.getElementById('btnCloseModalReagente');
+const modalReagenteTitle = document.getElementById('modalReagenteTitle');
+const formReagente = document.getElementById('formReagente');
+const btnCancelReagente = document.getElementById('btnCancelReagente');
+
+// Modal Vidraria
+const modalVidraria = document.getElementById('modalVidraria');
+const modalVidrariaOverlay = document.getElementById('modalVidrariaOverlay');
+const btnCloseModalVidraria = document.getElementById('btnCloseModalVidraria');
+const modalVidrariaTitle = document.getElementById('modalVidrariaTitle');
+const formVidraria = document.getElementById('formVidraria');
+const btnCancelVidraria = document.getElementById('btnCancelVidraria');
 
 // Modal Confirmar
 const modalConfirmar = document.getElementById('modalConfirmar');
@@ -71,7 +59,8 @@ const toastMessage = document.getElementById('toastMessage');
 
 // Variáveis de controle
 let currentEditUsuarioId = null;
-let currentEditMaterialId = null;
+let currentEditReagenteId = null;
+let currentEditVidrariaId = null;
 let currentDeleteType = null;
 let currentDeleteId = null;
 
@@ -80,21 +69,28 @@ let currentDeleteId = null;
 // ====================================
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Inicializa os ícones Lucide
+  const currentUser = getCurrentUser();
+  if (!currentUser || (currentUser.tipo !== 'Administrador' && currentUser.tipo !== 'Técnico')) {
+    window.location.href = 'login.html';
+    return;
+  }
+  
   lucide.createIcons();
   
-  // Renderiza os dados iniciais
   renderUsuarios();
-  renderMateriais();
+  renderReagentes();
+  renderVidrarias();
   
   // Event Listeners - Tabs
   tabUsuarios.addEventListener('click', () => switchTab('usuarios'));
-  tabMateriais.addEventListener('click', () => switchTab('materiais'));
+  tabReagentes.addEventListener('click', () => switchTab('reagentes'));
+  tabVidrarias.addEventListener('click', () => switchTab('vidrarias'));
   
   // Event Listeners - Botões principais
   btnBack.addEventListener('click', handleBack);
   btnNovoUsuario.addEventListener('click', openModalNovoUsuario);
-  btnNovoMaterial.addEventListener('click', openModalNovoMaterial);
+  btnNovoReagente.addEventListener('click', openModalNovoReagente);
+  btnNovaVidraria.addEventListener('click', openModalNovaVidraria);
   
   // Event Listeners - Modal Usuário
   btnCloseModalUsuario.addEventListener('click', closeModalUsuario);
@@ -102,11 +98,17 @@ document.addEventListener('DOMContentLoaded', () => {
   btnCancelUsuario.addEventListener('click', closeModalUsuario);
   formUsuario.addEventListener('submit', handleSubmitUsuario);
   
-  // Event Listeners - Modal Material
-  btnCloseModalMaterial.addEventListener('click', closeModalMaterial);
-  modalMaterialOverlay.addEventListener('click', closeModalMaterial);
-  btnCancelMaterial.addEventListener('click', closeModalMaterial);
-  formMaterial.addEventListener('submit', handleSubmitMaterial);
+  // Event Listeners - Modal Reagente
+  btnCloseModalReagente.addEventListener('click', closeModalReagente);
+  modalReagenteOverlay.addEventListener('click', closeModalReagente);
+  btnCancelReagente.addEventListener('click', closeModalReagente);
+  formReagente.addEventListener('submit', handleSubmitReagente);
+  
+  // Event Listeners - Modal Vidraria
+  btnCloseModalVidraria.addEventListener('click', closeModalVidraria);
+  modalVidrariaOverlay.addEventListener('click', closeModalVidraria);
+  btnCancelVidraria.addEventListener('click', closeModalVidraria);
+  formVidraria.addEventListener('submit', handleSubmitVidraria);
   
   // Event Listeners - Modal Confirmar
   btnCloseModalConfirmar.addEventListener('click', closeModalConfirmar);
@@ -120,16 +122,24 @@ document.addEventListener('DOMContentLoaded', () => {
 // ====================================
 
 function switchTab(tab) {
+  // Remove active de todos
+  tabUsuarios.classList.remove('active');
+  tabReagentes.classList.remove('active');
+  tabVidrarias.classList.remove('active');
+  contentUsuarios.classList.remove('active');
+  contentReagentes.classList.remove('active');
+  contentVidrarias.classList.remove('active');
+  
+  // Adiciona active no selecionado
   if (tab === 'usuarios') {
     tabUsuarios.classList.add('active');
-    tabMateriais.classList.remove('active');
     contentUsuarios.classList.add('active');
-    contentMateriais.classList.remove('active');
-  } else {
-    tabMateriais.classList.add('active');
-    tabUsuarios.classList.remove('active');
-    contentMateriais.classList.add('active');
-    contentUsuarios.classList.remove('active');
+  } else if (tab === 'reagentes') {
+    tabReagentes.classList.add('active');
+    contentReagentes.classList.add('active');
+  } else if (tab === 'vidrarias') {
+    tabVidrarias.classList.add('active');
+    contentVidrarias.classList.add('active');
   }
 }
 
@@ -138,10 +148,12 @@ function switchTab(tab) {
 // ====================================
 
 function renderUsuarios() {
+  const usuarios = getUsers();
+  
   if (usuarios.length === 0) {
     usuariosTableBody.innerHTML = `
       <tr>
-        <td colspan="4" style="text-align: center; padding: 2rem; color: var(--color-gray-500);">
+        <td colspan="5" style="text-align: center; padding: 2rem; color: var(--color-gray-500);">
           Nenhum usuário cadastrado.
         </td>
       </tr>
@@ -153,6 +165,7 @@ function renderUsuarios() {
     <tr>
       <td><strong>${usuario.nome}</strong></td>
       <td>${usuario.email}</td>
+      <td>${usuario.senha}</td>
       <td>
         <span class="badge badge-${usuario.tipo.toLowerCase()}">
           ${usuario.tipo}
@@ -175,33 +188,35 @@ function renderUsuarios() {
 }
 
 // ====================================
-// RENDERIZAÇÃO - MATERIAIS
+// RENDERIZAÇÃO - REAGENTES
 // ====================================
 
-function renderMateriais() {
-  if (materiais.length === 0) {
-    materiaisTableBody.innerHTML = `
+function renderReagentes() {
+  const reagentes = getReagentes();
+  
+  if (reagentes.length === 0) {
+    reagentesTableBody.innerHTML = `
       <tr>
         <td colspan="6" style="text-align: center; padding: 2rem; color: var(--color-gray-500);">
-          Nenhum material cadastrado.
+          Nenhum reagente cadastrado.
         </td>
       </tr>
     `;
     return;
   }
   
-  materiaisTableBody.innerHTML = materiais.map(material => {
-    const isLow = material.quantidade <= material.minimo;
+  reagentesTableBody.innerHTML = reagentes.map(reagente => {
+    const isLow = reagente.quantidade <= reagente.minimo;
     const badgeClass = isLow ? 'badge-low' : 'badge-ok';
     const badgeText = isLow ? 'Baixo' : 'OK';
     const badgeIcon = isLow ? 'alert-circle' : 'check-circle';
     
     return `
       <tr>
-        <td><strong>${material.nome}</strong></td>
-        <td class="text-center">${material.quantidade}</td>
-        <td class="text-center">${material.unidade}</td>
-        <td class="text-center">${material.minimo}</td>
+        <td><strong>${reagente.nome}</strong></td>
+        <td class="text-center">${reagente.quantidade}</td>
+        <td class="text-center">${reagente.unidade}</td>
+        <td class="text-center">${reagente.minimo}</td>
         <td class="text-center">
           <span class="badge ${badgeClass}">
             <i data-lucide="${badgeIcon}"></i>
@@ -210,10 +225,63 @@ function renderMateriais() {
         </td>
         <td class="text-right">
           <div class="table-actions">
-            <button class="btn-icon btn-edit" onclick="openModalEditMaterial(${material.id})" title="Editar">
+            <button class="btn-icon btn-edit" onclick="openModalEditReagente(${reagente.id})" title="Editar">
               <i data-lucide="edit-2"></i>
             </button>
-            <button class="btn-icon btn-delete" onclick="openModalDeleteMaterial(${material.id})" title="Excluir">
+            <button class="btn-icon btn-delete" onclick="openModalDeleteReagente(${reagente.id})" title="Excluir">
+              <i data-lucide="trash-2"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+  
+  lucide.createIcons();
+}
+
+// ====================================
+// RENDERIZAÇÃO - VIDRARIAS
+// ====================================
+
+function renderVidrarias() {
+  const vidrarias = getVidrarias();
+  
+  if (vidrarias.length === 0) {
+    vidrariasTableBody.innerHTML = `
+      <tr>
+        <td colspan="6" style="text-align: center; padding: 2rem; color: var(--color-gray-500);">
+          Nenhuma vidraria cadastrada.
+        </td>
+      </tr>
+    `;
+    return;
+  }
+  
+  vidrariasTableBody.innerHTML = vidrarias.map(vidraria => {
+    const isLow = vidraria.quantidade <= vidraria.minimo;
+    const badgeClass = isLow ? 'badge-low' : 'badge-ok';
+    const badgeText = isLow ? 'Baixo' : 'OK';
+    const badgeIcon = isLow ? 'alert-circle' : 'check-circle';
+    
+    return `
+      <tr>
+        <td><strong>${vidraria.nome}</strong></td>
+        <td class="text-center">${vidraria.quantidade}</td>
+        <td class="text-center">${vidraria.unidade}</td>
+        <td class="text-center">${vidraria.minimo}</td>
+        <td class="text-center">
+          <span class="badge ${badgeClass}">
+            <i data-lucide="${badgeIcon}"></i>
+            ${badgeText}
+          </span>
+        </td>
+        <td class="text-right">
+          <div class="table-actions">
+            <button class="btn-icon btn-edit" onclick="openModalEditVidraria(${vidraria.id})" title="Editar">
+              <i data-lucide="edit-2"></i>
+            </button>
+            <button class="btn-icon btn-delete" onclick="openModalDeleteVidraria(${vidraria.id})" title="Excluir">
               <i data-lucide="trash-2"></i>
             </button>
           </div>
@@ -233,17 +301,20 @@ function openModalNovoUsuario() {
   currentEditUsuarioId = null;
   modalUsuarioTitle.textContent = 'Novo Usuário';
   formUsuario.reset();
+  document.getElementById('usuarioSenha').disabled = false;
   modalUsuario.classList.add('active');
 }
 
 function openModalEditUsuario(id) {
   currentEditUsuarioId = id;
+  const usuarios = getUsers();
   const usuario = usuarios.find(u => u.id === id);
   
   if (usuario) {
     modalUsuarioTitle.textContent = 'Editar Usuário';
     document.getElementById('usuarioNome').value = usuario.nome;
     document.getElementById('usuarioEmail').value = usuario.email;
+    document.getElementById('usuarioSenha').value = usuario.senha;
     document.getElementById('usuarioTipo').value = usuario.tipo;
     modalUsuario.classList.add('active');
   }
@@ -260,24 +331,14 @@ function handleSubmitUsuario(e) {
   
   const nome = document.getElementById('usuarioNome').value;
   const email = document.getElementById('usuarioEmail').value;
+  const senha = document.getElementById('usuarioSenha').value;
   const tipo = document.getElementById('usuarioTipo').value;
   
   if (currentEditUsuarioId) {
-    // Editar usuário existente
-    const index = usuarios.findIndex(u => u.id === currentEditUsuarioId);
-    if (index !== -1) {
-      usuarios[index] = { ...usuarios[index], nome, email, tipo };
-      showToast('Usuário atualizado com sucesso!');
-    }
+    updateUser(currentEditUsuarioId, { nome, email, senha, tipo });
+    showToast('Usuário atualizado com sucesso!');
   } else {
-    // Criar novo usuário
-    const novoUsuario = {
-      id: Date.now(),
-      nome,
-      email,
-      tipo
-    };
-    usuarios.push(novoUsuario);
+    addUser({ nome, email, senha, tipo });
     showToast('Usuário cadastrado com sucesso!');
   }
   
@@ -286,66 +347,107 @@ function handleSubmitUsuario(e) {
 }
 
 // ====================================
-// MODAL MATERIAL - FUNÇÕES
+// MODAL REAGENTE - FUNÇÕES
 // ====================================
 
-function openModalNovoMaterial() {
-  currentEditMaterialId = null;
-  modalMaterialTitle.textContent = 'Novo Material';
-  formMaterial.reset();
-  modalMaterial.classList.add('active');
+function openModalNovoReagente() {
+  currentEditReagenteId = null;
+  modalReagenteTitle.textContent = 'Novo Reagente';
+  formReagente.reset();
+  modalReagente.classList.add('active');
 }
 
-function openModalEditMaterial(id) {
-  currentEditMaterialId = id;
-  const material = materiais.find(m => m.id === id);
+function openModalEditReagente(id) {
+  currentEditReagenteId = id;
+  const reagentes = getReagentes();
+  const reagente = reagentes.find(r => r.id === id);
   
-  if (material) {
-    modalMaterialTitle.textContent = 'Editar Material';
-    document.getElementById('materialNome').value = material.nome;
-    document.getElementById('materialQuantidade').value = material.quantidade;
-    document.getElementById('materialMinimo').value = material.minimo;
-    document.getElementById('materialUnidade').value = material.unidade;
-    modalMaterial.classList.add('active');
+  if (reagente) {
+    modalReagenteTitle.textContent = 'Editar Reagente';
+    document.getElementById('reagenteNome').value = reagente.nome;
+    document.getElementById('reagenteQuantidade').value = reagente.quantidade;
+    document.getElementById('reagenteMinimo').value = reagente.minimo;
+    document.getElementById('reagenteUnidade').value = reagente.unidade;
+    modalReagente.classList.add('active');
   }
 }
 
-function closeModalMaterial() {
-  modalMaterial.classList.remove('active');
-  formMaterial.reset();
-  currentEditMaterialId = null;
+function closeModalReagente() {
+  modalReagente.classList.remove('active');
+  formReagente.reset();
+  currentEditReagenteId = null;
 }
 
-function handleSubmitMaterial(e) {
+function handleSubmitReagente(e) {
   e.preventDefault();
   
-  const nome = document.getElementById('materialNome').value;
-  const quantidade = parseInt(document.getElementById('materialQuantidade').value);
-  const minimo = parseInt(document.getElementById('materialMinimo').value);
-  const unidade = document.getElementById('materialUnidade').value;
+  const nome = document.getElementById('reagenteNome').value;
+  const quantidade = parseFloat(document.getElementById('reagenteQuantidade').value);
+  const minimo = parseFloat(document.getElementById('reagenteMinimo').value);
+  const unidade = document.getElementById('reagenteUnidade').value;
   
-  if (currentEditMaterialId) {
-    // Editar material existente
-    const index = materiais.findIndex(m => m.id === currentEditMaterialId);
-    if (index !== -1) {
-      materiais[index] = { ...materiais[index], nome, quantidade, minimo, unidade };
-      showToast('Material atualizado com sucesso!');
-    }
+  if (currentEditReagenteId) {
+    updateReagente(currentEditReagenteId, { nome, quantidade, minimo, unidade });
+    showToast('Reagente atualizado com sucesso!');
   } else {
-    // Criar novo material
-    const novoMaterial = {
-      id: Date.now(),
-      nome,
-      quantidade,
-      minimo,
-      unidade
-    };
-    materiais.push(novoMaterial);
-    showToast('Material cadastrado com sucesso!');
+    addReagente({ nome, quantidade, minimo, unidade });
+    showToast('Reagente cadastrado com sucesso!');
   }
   
-  closeModalMaterial();
-  renderMateriais();
+  closeModalReagente();
+  renderReagentes();
+}
+
+// ====================================
+// MODAL VIDRARIA - FUNÇÕES
+// ====================================
+
+function openModalNovaVidraria() {
+  currentEditVidrariaId = null;
+  modalVidrariaTitle.textContent = 'Nova Vidraria';
+  formVidraria.reset();
+  modalVidraria.classList.add('active');
+}
+
+function openModalEditVidraria(id) {
+  currentEditVidrariaId = id;
+  const vidrarias = getVidrarias();
+  const vidraria = vidrarias.find(v => v.id === id);
+  
+  if (vidraria) {
+    modalVidrariaTitle.textContent = 'Editar Vidraria';
+    document.getElementById('vidriaNome').value = vidraria.nome;
+    document.getElementById('vidrariaQuantidade').value = vidraria.quantidade;
+    document.getElementById('vidrariaMinimo').value = vidraria.minimo;
+    document.getElementById('vidrariaUnidade').value = vidraria.unidade;
+    modalVidraria.classList.add('active');
+  }
+}
+
+function closeModalVidraria() {
+  modalVidraria.classList.remove('active');
+  formVidraria.reset();
+  currentEditVidrariaId = null;
+}
+
+function handleSubmitVidraria(e) {
+  e.preventDefault();
+  
+  const nome = document.getElementById('vidriaNome').value;
+  const quantidade = parseInt(document.getElementById('vidrariaQuantidade').value);
+  const minimo = parseInt(document.getElementById('vidrariaMinimo').value);
+  const unidade = document.getElementById('vidrariaUnidade').value;
+  
+  if (currentEditVidrariaId) {
+    updateVidraria(currentEditVidrariaId, { nome, quantidade, minimo, unidade });
+    showToast('Vidraria atualizada com sucesso!');
+  } else {
+    addVidraria({ nome, quantidade, minimo, unidade });
+    showToast('Vidraria cadastrada com sucesso!');
+  }
+  
+  closeModalVidraria();
+  renderVidrarias();
 }
 
 // ====================================
@@ -353,6 +455,7 @@ function handleSubmitMaterial(e) {
 // ====================================
 
 function openModalDeleteUsuario(id) {
+  const usuarios = getUsers();
   const usuario = usuarios.find(u => u.id === id);
   if (usuario) {
     currentDeleteType = 'usuario';
@@ -362,12 +465,24 @@ function openModalDeleteUsuario(id) {
   }
 }
 
-function openModalDeleteMaterial(id) {
-  const material = materiais.find(m => m.id === id);
-  if (material) {
-    currentDeleteType = 'material';
+function openModalDeleteReagente(id) {
+  const reagentes = getReagentes();
+  const reagente = reagentes.find(r => r.id === id);
+  if (reagente) {
+    currentDeleteType = 'reagente';
     currentDeleteId = id;
-    confirmMessage.textContent = `Tem certeza que deseja excluir o material "${material.nome}"? Esta ação não pode ser desfeita.`;
+    confirmMessage.textContent = `Tem certeza que deseja excluir o reagente "${reagente.nome}"? Esta ação não pode ser desfeita.`;
+    modalConfirmar.classList.add('active');
+  }
+}
+
+function openModalDeleteVidraria(id) {
+  const vidrarias = getVidrarias();
+  const vidraria = vidrarias.find(v => v.id === id);
+  if (vidraria) {
+    currentDeleteType = 'vidraria';
+    currentDeleteId = id;
+    confirmMessage.textContent = `Tem certeza que deseja excluir a vidraria "${vidraria.nome}"? Esta ação não pode ser desfeita.`;
     modalConfirmar.classList.add('active');
   }
 }
@@ -380,13 +495,17 @@ function closeModalConfirmar() {
 
 function handleConfirmarExclusao() {
   if (currentDeleteType === 'usuario') {
-    usuarios = usuarios.filter(u => u.id !== currentDeleteId);
+    deleteUser(currentDeleteId);
     renderUsuarios();
     showToast('Usuário excluído com sucesso!');
-  } else if (currentDeleteType === 'material') {
-    materiais = materiais.filter(m => m.id !== currentDeleteId);
-    renderMateriais();
-    showToast('Material excluído com sucesso!');
+  } else if (currentDeleteType === 'reagente') {
+    deleteReagente(currentDeleteId);
+    renderReagentes();
+    showToast('Reagente excluído com sucesso!');
+  } else if (currentDeleteType === 'vidraria') {
+    deleteVidraria(currentDeleteId);
+    renderVidrarias();
+    showToast('Vidraria excluída com sucesso!');
   }
   
   closeModalConfirmar();
@@ -417,7 +536,6 @@ function showToast(message) {
 // UTILITÁRIOS
 // ====================================
 
-// Previne que o modal feche ao clicar no conteúdo
 document.querySelectorAll('.modal-content').forEach(content => {
   content.addEventListener('click', (e) => {
     e.stopPropagation();

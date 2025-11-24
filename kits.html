@@ -7,7 +7,9 @@
   <title>Gerenciar Kits - ETEC Júlio de Mesquita</title>
 
   <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;600;700&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;600;700&family=Open+Sans:wght@300;400;600;700&display=swap"
+    rel="stylesheet">
 
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -93,7 +95,8 @@
           <!-- Descrição -->
           <div class="form-group">
             <label for="kitDescricao">Descrição (Opcional)</label>
-            <textarea id="kitDescricao" class="form-control" rows="3" placeholder="Descreva o objetivo do experimento..."></textarea>
+            <textarea id="kitDescricao" class="form-control" rows="3"
+              placeholder="Descreva o objetivo do experimento..."></textarea>
           </div>
 
           <!-- Adicionar Itens -->
@@ -102,7 +105,7 @@
               <i data-lucide="list"></i>
               Itens do Kit
             </h3>
-            
+
             <div class="add-item-form">
               <div class="form-row">
                 <div class="form-group">
@@ -111,20 +114,21 @@
                     <option value="">Selecione</option>
                     <option value="Vidraria">Vidraria</option>
                     <option value="Reagente">Reagente</option>
-                    <option value="Equipamento">Equipamento</option>
                   </select>
                 </div>
-                
+
                 <div class="form-group">
-                  <label for="itemNome">Nome do Item</label>
-                  <input type="text" id="itemNome" class="form-control" placeholder="Ex: Béquer 50ml">
+                  <label for="itemNome">Material</label>
+                  <select id="itemNome" class="form-control">
+                    <option value="">Selecione o tipo primeiro</option>
+                  </select>
                 </div>
-                
+
                 <div class="form-group">
                   <label for="itemQuantidade">Quantidade</label>
-                  <input type="number" id="itemQuantidade" class="form-control" min="1" placeholder="0">
+                  <input type="number" id="itemQuantidade" class="form-control" min="0.01" step="0.01" placeholder="0">
                 </div>
-                
+
                 <div class="form-group">
                   <label>&nbsp;</label>
                   <button type="button" class="btn-add-item" id="btnAddItem">
@@ -164,13 +168,13 @@
       <div class="modal-body">
         <div class="kit-details">
           <p class="kit-description" id="viewKitDescription"></p>
-          
+
           <h3 class="section-subtitle">Itens do Kit:</h3>
           <div class="view-itens-list" id="viewItensList">
             <!-- Itens serão exibidos via JavaScript -->
           </div>
         </div>
-        
+
         <div class="modal-actions">
           <button type="button" class="btn-secondary" id="btnCloseView">Fechar</button>
         </div>
@@ -207,6 +211,7 @@
   </div>
 
   <!-- Scripts -->
+  <script src="js/storage.js"></script>
   <script src="js/kits.js"></script>
 </body>
 

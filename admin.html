@@ -1,21 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Painel Administrativo - ETEC Júlio de Mesquita</title>
-
-  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;600;700&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-
-  <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
-
-  <!-- Styles -->
   <link rel="stylesheet" href="css/admin.css">
 </head>
-
 <body>
   <!-- Header -->
   <header class="header">
@@ -45,7 +37,6 @@
   <!-- Main Content -->
   <main class="main-content">
     <div class="container">
-      <!-- Page Title -->
       <div class="page-header">
         <h1 class="page-title">Painel Administrativo</h1>
         <p class="page-subtitle">Gerenciamento de usuários e materiais</p>
@@ -57,9 +48,13 @@
           <i data-lucide="users"></i>
           Usuários
         </button>
-        <button class="tab-button" data-tab="materiais" id="tabMateriais">
-          <i data-lucide="package"></i>
-          Materiais
+        <button class="tab-button" data-tab="reagentes" id="tabReagentes">
+          <i data-lucide="flask-conical"></i>
+          Reagentes
+        </button>
+        <button class="tab-button" data-tab="vidrarias" id="tabVidrarias">
+          <i data-lucide="beaker"></i>
+          Vidrarias
         </button>
       </div>
 
@@ -79,24 +74,23 @@
               <tr>
                 <th>Nome</th>
                 <th>Email</th>
+                <th>Senha</th>
                 <th>Tipo</th>
                 <th class="text-right">Ações</th>
               </tr>
             </thead>
-            <tbody id="usuariosTableBody">
-              <!-- Linhas serão carregadas via JavaScript -->
-            </tbody>
+            <tbody id="usuariosTableBody"></tbody>
           </table>
         </div>
       </div>
 
-      <!-- Tab: Materiais -->
-      <div class="tab-content" id="contentMateriais">
+      <!-- Tab: Reagentes -->
+      <div class="tab-content" id="contentReagentes">
         <div class="section-header">
-          <h2 class="section-title">Controle de Estoque</h2>
-          <button class="btn-primary" id="btnNovoMaterial">
+          <h2 class="section-title">Controle de Reagentes</h2>
+          <button class="btn-primary" id="btnNovoReagente">
             <i data-lucide="plus"></i>
-            Novo Material
+            Novo Reagente
           </button>
         </div>
 
@@ -104,7 +98,7 @@
           <table class="data-table">
             <thead>
               <tr>
-                <th>Material</th>
+                <th>Reagente</th>
                 <th class="text-center">Quantidade</th>
                 <th class="text-center">Unidade</th>
                 <th class="text-center">Mínimo</th>
@@ -112,9 +106,34 @@
                 <th class="text-right">Ações</th>
               </tr>
             </thead>
-            <tbody id="materiaisTableBody">
-              <!-- Linhas serão carregadas via JavaScript -->
-            </tbody>
+            <tbody id="reagentesTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tab: Vidrarias -->
+      <div class="tab-content" id="contentVidrarias">
+        <div class="section-header">
+          <h2 class="section-title">Controle de Vidrarias</h2>
+          <button class="btn-primary" id="btnNovaVidraria">
+            <i data-lucide="plus"></i>
+            Nova Vidraria
+          </button>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Vidraria</th>
+                <th class="text-center">Quantidade</th>
+                <th class="text-center">Unidade</th>
+                <th class="text-center">Mínimo</th>
+                <th class="text-center">Status</th>
+                <th class="text-right">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="vidrariasTableBody"></tbody>
           </table>
         </div>
       </div>
@@ -144,6 +163,11 @@
           </div>
 
           <div class="form-group">
+            <label for="usuarioSenha">Senha</label>
+            <input type="text" id="usuarioSenha" class="form-control" required placeholder="Digite a senha">
+          </div>
+
+          <div class="form-group">
             <label for="usuarioTipo">Tipo de Usuário</label>
             <select id="usuarioTipo" class="form-control" required>
               <option value="">Selecione</option>
@@ -162,52 +186,96 @@
     </div>
   </div>
 
-  <!-- Modal: Material -->
-  <div class="modal" id="modalMaterial">
-    <div class="modal-overlay" id="modalMaterialOverlay"></div>
+  <!-- Modal: Reagente -->
+  <div class="modal" id="modalReagente">
+    <div class="modal-overlay" id="modalReagenteOverlay"></div>
     <div class="modal-content">
       <div class="modal-header">
-        <h2 class="modal-title" id="modalMaterialTitle">Novo Material</h2>
-        <button class="modal-close" id="btnCloseModalMaterial">
+        <h2 class="modal-title" id="modalReagenteTitle">Novo Reagente</h2>
+        <button class="modal-close" id="btnCloseModalReagente">
           <i data-lucide="x"></i>
         </button>
       </div>
       <div class="modal-body">
-        <form id="formMaterial">
+        <form id="formReagente">
           <div class="form-group">
-            <label for="materialNome">Nome do Material</label>
-            <input type="text" id="materialNome" class="form-control" required placeholder="Ex: Béquer 50ml">
+            <label for="reagenteNome">Nome do Reagente</label>
+            <input type="text" id="reagenteNome" class="form-control" required placeholder="Ex: Ácido Clorídrico">
           </div>
 
           <div class="form-row">
             <div class="form-group">
-              <label for="materialQuantidade">Quantidade</label>
-              <input type="number" id="materialQuantidade" class="form-control" min="0" required placeholder="0">
+              <label for="reagenteQuantidade">Quantidade</label>
+              <input type="number" id="reagenteQuantidade" class="form-control" min="0" step="0.01" required placeholder="0">
             </div>
 
             <div class="form-group">
-              <label for="materialMinimo">Quantidade Mínima</label>
-              <input type="number" id="materialMinimo" class="form-control" min="0" required placeholder="0">
+              <label for="reagenteMinimo">Quantidade Mínima</label>
+              <input type="number" id="reagenteMinimo" class="form-control" min="0" step="0.01" required placeholder="0">
             </div>
           </div>
 
           <div class="form-group">
-            <label for="materialUnidade">Unidade de Medida</label>
-            <select id="materialUnidade" class="form-control" required>
+            <label for="reagenteUnidade">Unidade de Medida</label>
+            <select id="reagenteUnidade" class="form-control" required>
               <option value="">Selecione</option>
-              <option value="unidade">Unidade</option>
-              <option value="litro">Litro</option>
-              <option value="mililitro">Mililitro</option>
-              <option value="grama">Grama</option>
-              <option value="quilograma">Quilograma</option>
-              <option value="folha">Folha</option>
-              <option value="caixa">Caixa</option>
-              <option value="pacote">Pacote</option>
+              <option value="g">Gramas (g)</option>
+              <option value="kg">Quilogramas (kg)</option>
+              <option value="ml">Mililitros (ml)</option>
+              <option value="L">Litros (L)</option>
             </select>
           </div>
 
           <div class="modal-actions">
-            <button type="button" class="btn-secondary" id="btnCancelMaterial">Cancelar</button>
+            <button type="button" class="btn-secondary" id="btnCancelReagente">Cancelar</button>
+            <button type="submit" class="btn-primary">Salvar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Vidraria -->
+  <div class="modal" id="modalVidraria">
+    <div class="modal-overlay" id="modalVidrariaOverlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalVidrariaTitle">Nova Vidraria</h2>
+        <button class="modal-close" id="btnCloseModalVidraria">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="formVidraria">
+          <div class="form-group">
+            <label for="vidriaNome">Nome da Vidraria</label>
+            <input type="text" id="vidriaNome" class="form-control" required placeholder="Ex: Béquer 50ml">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="vidrariaQuantidade">Quantidade</label>
+              <input type="number" id="vidrariaQuantidade" class="form-control" min="0" required placeholder="0">
+            </div>
+
+            <div class="form-group">
+              <label for="vidrariaMinimo">Quantidade Mínima</label>
+              <input type="number" id="vidrariaMinimo" class="form-control" min="0" required placeholder="0">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="vidrariaUnidade">Unidade de Medida</label>
+            <select id="vidrariaUnidade" class="form-control" required>
+              <option value="">Selecione</option>
+              <option value="und">Unidade</option>
+              <option value="pacote">Pacote</option>
+              <option value="caixa">Caixa</option>
+            </select>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-secondary" id="btnCancelVidraria">Cancelar</button>
             <button type="submit" class="btn-primary">Salvar</button>
           </div>
         </form>
@@ -244,7 +312,7 @@
   </div>
 
   <!-- Scripts -->
+  <script src="js/storage.js"></script>
   <script src="js/admin.js"></script>
 </body>
-
 </html>
