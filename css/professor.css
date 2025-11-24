@@ -124,7 +124,7 @@ body {
   font-size: 0.95rem;
 }
 
-.btn-logout {
+.btn-back {
   display: flex;
   align-items: center;
   gap: var(--spacing-xs);
@@ -136,10 +136,10 @@ body {
   font-size: 0.95rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all var(--transition-base);
 }
 
-.btn-logout:hover {
+.btn-back:hover {
   background-color: var(--color-gray-100);
   color: var(--color-gray-800);
 }

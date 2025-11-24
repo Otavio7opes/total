@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - ETEC Júlio de Mesquita</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;600;700&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/login.css">
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="logos">
+        <div class="logo-etec">
+          <img src="images/logo-etec.png" alt="ETEC Júlio de Mesquita" class="logo-img">
+        </div>
+        <div class="logo-cps">
+          <img src="images/logo-cps.png" alt="Centro Paula Souza" class="logo-img">
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="header-bar"></div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="login-container">
+      <!-- Login Form -->
+      <div id="loginForm">
+        <div class="login-header">
+          <div class="login-icon">
+            <i data-lucide="user"></i>
+          </div>
+          <h1 class="login-title">Sistema de Laboratórios</h1>
+          <p class="login-subtitle">Faça login para continuar</p>
+        </div>
+
+        <form class="login-form" id="formLogin">
+          <div class="form-group">
+            <label for="email">E-mail</label>
+            <input 
+              type="email" 
+              id="email" 
+              class="form-control" 
+              required 
+              placeholder="seu.email@etec.sp.gov.br"
+              autocomplete="email"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="password">Senha</label>
+            <input 
+              type="password" 
+              id="password" 
+              class="form-control" 
+              required 
+              placeholder="••••••••"
+              autocomplete="current-password"
+            >
+          </div>
+
+          <button type="submit" class="btn-primary">
+            <i data-lucide="log-in"></i>
+            Entrar
+          </button>
+        </form>
+      </div>
+
+      <!-- Admin Menu (hidden initially) -->
+      <div id="adminMenu" class="admin-menu">
+        <div class="login-header">
+          <div class="login-icon">
+            <i data-lucide="shield"></i>
+          </div>
+          <h2 class="menu-title">Painel Administrativo</h2>
+          <p class="menu-subtitle">Escolha o sistema que deseja acessar</p>
+        </div>
+
+        <div class="menu-buttons">
+          <button class="menu-button" onclick="window.location.href='admin.html'">
+            <div class="menu-button-icon">
+              <i data-lucide="users"></i>
+            </div>
+            <div class="menu-button-content">
+              <div class="menu-button-title">Administração</div>
+              <div class="menu-button-description">Gerenciar usuários e materiais</div>
+            </div>
+          </button>
+
+          <button class="menu-button" onclick="window.location.href='labtech.html'">
+            <div class="menu-button-icon">
+              <i data-lucide="flask-conical"></i>
+            </div>
+            <div class="menu-button-content">
+              <div class="menu-button-title">Técnico de Laboratório</div>
+              <div class="menu-button-description">Gerenciar reservas e estoque</div>
+            </div>
+          </button>
+        </div>
+
+        <button class="btn-back" id="btnBackToLogin">
+          <i data-lucide="arrow-left"></i>
+          Voltar ao Login
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <div class="footer-bar"></div>
+
+  <!-- Scripts -->
+  <script src="js/login.js"></script>
+</body>

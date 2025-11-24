@@ -33,7 +33,7 @@ const contentUsuarios = document.getElementById('contentUsuarios');
 const contentMateriais = document.getElementById('contentMateriais');
 
 // Botões principais
-const btnLogout = document.getElementById('btnLogout');
+const btnBack = document.getElementById('btnBack');
 const btnNovoUsuario = document.getElementById('btnNovoUsuario');
 const btnNovoMaterial = document.getElementById('btnNovoMaterial');
 
@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
   tabMateriais.addEventListener('click', () => switchTab('materiais'));
   
   // Event Listeners - Botões principais
-  btnLogout.addEventListener('click', handleLogout);
+  btnBack.addEventListener('click', handleBack);
   btnNovoUsuario.addEventListener('click', openModalNovoUsuario);
   btnNovoMaterial.addEventListener('click', openModalNovoMaterial);
   
@@ -393,13 +393,11 @@ function handleConfirmarExclusao() {
 }
 
 // ====================================
-// LOGOUT
+// VOLTAR
 // ====================================
 
-function handleLogout() {
-  if (confirm('Deseja realmente sair do sistema?')) {
-    window.location.href = 'login.html';
-  }
+function handleBack() {
+  window.location.href = 'login.html#admin';
 }
 
 // ====================================

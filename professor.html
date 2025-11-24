@@ -31,9 +31,9 @@
         </div>
         <div class="user-menu">
           <span class="user-name">Professor</span>
-          <button class="btn-logout" id="btnLogout">
-            <i data-lucide="log-out"></i>
-            Sair
+          <button class="btn-back" onclick="window.location.href='login.html'">
+            <i data-lucide="arrow-left"></i>
+            Voltar
           </button>
         </div>
       </div>
@@ -54,7 +54,7 @@
       <!-- Action Cards -->
       <div class="action-cards">
         <!-- Card: Calendário -->
-        <div class="action-card" onclick="window.location.href='calendario.html'">
+        <div class="action-card" id="cardCalendario">
           <div class="card-icon">
             <i data-lucide="calendar"></i>
           </div>
@@ -63,7 +63,7 @@
         </div>
 
         <!-- Card: Reservar -->
-        <div class="action-card" onclick="window.location.href='reservar.html'">
+        <div class="action-card" id="cardReservar">
           <div class="card-icon">
             <i data-lucide="clipboard-check"></i>
           </div>
@@ -72,7 +72,7 @@
         </div>
 
         <!-- Card: Kits -->
-        <div class="action-card" onclick="window.location.href='kits.html'">
+        <div class="action-card" id="cardKits">
           <div class="card-icon">
             <i data-lucide="package"></i>
           </div>

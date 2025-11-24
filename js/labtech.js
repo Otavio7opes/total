@@ -15,7 +15,7 @@ let reservas = [
       { nome: 'Pipeta', checked: false },
       { nome: 'Erlenmyer 250ml', checked: false }
     ],
-    status: 'pendente' // pendente, confirmado, problema
+    status: 'pendente'
   },
   {
     id: 2,
@@ -65,7 +65,7 @@ let estoque = [
 // ====================================
 
 const reservationsList = document.getElementById('reservationsList');
-const btnLogout = document.getElementById('btnLogout');
+const btnBack = document.getElementById('btnBack');
 const btnAdjustStock = document.getElementById('btnAdjustStock');
 
 // Modal Problema
@@ -102,28 +102,21 @@ const toastMessage = document.getElementById('toastMessage');
 // ====================================
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Inicializa os ícones Lucide
   lucide.createIcons();
-  
-  // Renderiza as reservas
   renderReservations();
   
-  // Event Listeners
-  btnLogout.addEventListener('click', handleLogout);
+  btnBack.addEventListener('click', handleBack);
   btnAdjustStock.addEventListener('click', openModalEstoque);
   
-  // Modal Problema
   btnCloseModalProblema.addEventListener('click', closeModalProblema);
   modalProblemaOverlay.addEventListener('click', closeModalProblema);
   btnCancelProblema.addEventListener('click', closeModalProblema);
   formProblema.addEventListener('submit', handleSubmitProblema);
   
-  // Modal Estoque
   btnCloseModalEstoque.addEventListener('click', closeModalEstoque);
   modalEstoqueOverlay.addEventListener('click', closeModalEstoque);
   searchEstoque.addEventListener('input', handleSearchEstoque);
   
-  // Modal Editar Quantidade
   btnCloseModalEditarQuantidade.addEventListener('click', closeModalEditarQuantidade);
   modalEditarQuantidadeOverlay.addEventListener('click', closeModalEditarQuantidade);
   btnCancelEditarQuantidade.addEventListener('click', closeModalEditarQuantidade);
@@ -200,7 +193,6 @@ function renderReservations() {
     `;
   }).join('');
   
-  // Re-inicializa os ícones Lucide
   lucide.createIcons();
 }
 
@@ -316,7 +308,6 @@ function openModalProblema(reservaId) {
   if (reserva) {
     document.getElementById('problemaReserva').value = `${reserva.professor} - ${reserva.laboratorio}`;
     
-    // Preenche o select de materiais
     const selectMaterial = document.getElementById('problemaMaterial');
     selectMaterial.innerHTML = '<option value="">Selecione o material</option>' +
       reserva.materiais.map(m => `<option value="${m.nome}">${m.nome}</option>`).join('');
@@ -337,15 +328,12 @@ function handleSubmitProblema(e) {
   const material = document.getElementById('problemaMaterial').value;
   const tipo = document.getElementById('problemaTipo').value;
   const quantidade = document.getElementById('problemaQuantidade').value;
-  const observacao = document.getElementById('problemaObservacao').value;
   
-  // Atualiza o status da reserva
   const reserva = reservas.find(r => r.id === currentProblemaReservaId);
   if (reserva) {
     reserva.status = 'problema';
   }
   
-  // Atualiza o estoque (simula a redução)
   const itemEstoque = estoque.find(e => e.nome === material);
   if (itemEstoque && (tipo === 'quebra' || tipo === 'perda')) {
     itemEstoque.quantidade = Math.max(0, itemEstoque.quantidade - parseInt(quantidade));
@@ -429,14 +417,11 @@ function handleSubmitEditarQuantidade(e) {
 }
 
 // ====================================
-// LOGOUT
+// VOLTAR
 // ====================================
 
-function handleLogout() {
-  if (confirm('Deseja realmente sair do sistema?')) {
-    // Aqui você redirecionaria para a página de login
-    window.location.href = 'login.html';
-  }
+function handleBack() {
+  window.location.href = 'login.html#admin';
 }
 
 // ====================================
@@ -456,7 +441,6 @@ function showToast(message) {
 // UTILITÁRIOS
 // ====================================
 
-// Previne que o modal feche ao clicar no conteúdo
 document.querySelectorAll('.modal-content').forEach(content => {
   content.addEventListener('click', (e) => {
     e.stopPropagation();

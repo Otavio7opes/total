@@ -6,10 +6,27 @@ document.addEventListener('DOMContentLoaded', () => {
   // Inicializa os ícones Lucide
   lucide.createIcons();
   
-  // Event Listeners
-  const btnLogout = document.getElementById('btnLogout');
-  if (btnLogout) {
-    btnLogout.addEventListener('click', handleLogout);
+  // Event Listeners para os cards
+  const cardCalendario = document.getElementById('cardCalendario');
+  const cardReservar = document.getElementById('cardReservar');
+  const cardKits = document.getElementById('cardKits');
+  
+  if (cardCalendario) {
+    cardCalendario.addEventListener('click', () => {
+      window.location.href = 'calendario.html';
+    });
+  }
+  
+  if (cardReservar) {
+    cardReservar.addEventListener('click', () => {
+      window.location.href = 'reservar.html';
+    });
+  }
+  
+  if (cardKits) {
+    cardKits.addEventListener('click', () => {
+      window.location.href = 'kits.html';
+    });
   }
   
   // Adiciona animação nos cards
@@ -19,13 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
 // ====================================
 // FUNÇÕES
 // ====================================
-
-function handleLogout() {
-  if (confirm('Deseja realmente sair do sistema?')) {
-    // Aqui você redirecionaria para a página de login
-    window.location.href = 'login.html';
-  }
-}
 
 function animateCards() {
   const cards = document.querySelectorAll('.action-card');
